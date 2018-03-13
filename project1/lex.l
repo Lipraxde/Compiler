@@ -5,12 +5,42 @@
 #define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %d>\n", #t, (i));}
 #define tokenString(t, s)  {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (s));}
 #define MAX_LINE_LENG      256
+#define MAX_STR_LENG       256
 
 int Opt_S = 1;
 int Opt_T = 1;
 int linenum = 1;
 char buf[MAX_LINE_LENG];
-char *strfront;
+char str_buf[MAX_STR_LENG];
+
+int str_replace(char *des, const char *src, const char *t, const char *p)
+{   
+    const char *temp1;
+    const char *temp2;
+    
+    while(*src!=0)
+    {
+        temp1 = t;
+        temp2 = src;
+        while(*temp1==*temp2)
+        {
+        	temp1++;
+        	temp2++;
+        }
+        if(*temp1==0)
+        {
+            src = temp2;
+            temp1 = p;
+            while(*temp1!=0)
+                *des++ = *temp1++;
+        }
+        else
+            *des++ = *src++;
+    }
+    *des = 0;
+    return 0;
+}
+
 %}
 delimiters  ","|":"|";"|"("|")"|"["|"]"
 operators   "+"|"-"|"*"|"/"|"mod"|":="|"<"|"<="|"<>"|">="|">"|"="|"and"|"or"|"not"
@@ -20,7 +50,10 @@ digit       [0-9]
 space       [ \t]+
 dec_integer {digit}*
 float_point [1-9]{digit}*\.{digit}*[1-9]
-scientific  {float_point}(E|e)(\+|\-)?{dec_integer}
+scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
+
+%X COMMENT
+
 %%
 {delimiters}|{operators} {
           token("<%s>\n", yytext);
@@ -32,20 +65,30 @@ scientific  {float_point}(E|e)(\+|\-)?{dec_integer}
           tokenString(id, yytext);
         }
 {space} { LIST; }
-\"({letter}|{digit}|{space}|"")*\" {
+\"({letter}|{digit}|{space}|\"\")*\" {
           yytext[strlen(yytext) - 1] = '\0';
-          tokenString(string, yytext + 1);
-          strcat(buf, "\"");
+          str_replace(str_buf, yytext + 1, "\"\"", "\"");
+          yytext[strlen(yytext) - 1] = '\"';
+          tokenString(string, str_buf);
         }
 0({digit})* { tokenString(oct_integer, yytext); }
 {dec_integer} { tokenString(integer, yytext); }
 {float_point} { tokenString(float, yytext); }
 {scientific} { tokenString(scientific, yytext); }
-"//&T+".*$ { LIST; Opt_T = 1; }
-"//&S+".*$ { LIST; Opt_S = 1; }
-"//&T-".*$ { LIST; Opt_T = 0; }
-"//&S-".*$ { LIST; Opt_S = 0; }
-"//".*$ { LIST; }
+"//&T+".* { LIST; Opt_T = 1; }
+"//&S+".* { LIST; Opt_S = 1; }
+"//&T-".* { LIST; Opt_T = 0; }
+"//&S-".* { LIST; Opt_S = 0; }
+"//".* { LIST; }
+"/*" { LIST; BEGIN COMMENT; }
+<COMMENT>. { LIST; }
+<COMMENT>\n {
+          if (Opt_S)
+            printf("%d: %s\n", linenum, buf);
+          linenum++;
+          buf[0] = '\0';
+        }
+<COMMENT>"*/" { LIST; BEGIN INITIAL;}
 \n      {
           if (Opt_S)
             printf("%d: %s\n", linenum, buf);
