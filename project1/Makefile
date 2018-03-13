@@ -1,6 +1,6 @@
 SRCS  = lex.l
 OBJS  = lex.yy.c scanner
-LEX  := lex
+LEX  := flex
 
 all: scanner
 
