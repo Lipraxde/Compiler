@@ -5,7 +5,7 @@ LEX  := lex
 all: scanner
 
 scanner: lex.yy.c
-	$(CC) lex.yy.c -ll -o scanner
+	$(CC) lex.yy.c -lfl -o scanner
 
 lex.yy.c: lex.l
 	$(LEX) --outfile=lex.yy.c < lex.l
