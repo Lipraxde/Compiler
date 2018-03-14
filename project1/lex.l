@@ -1,6 +1,6 @@
 %{
 #define LIST               strcat(buf, yytext)
-#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);}
+#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);} // I modfiy this macor. !!TACK CARE!!
 #define tokenChar(t)       {LIST; if (Opt_T) printf("<%c>\n", (t));}
 #define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %d>\n", #t, (i));}
 #define tokenString(t, s)  {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (s));}
@@ -11,10 +11,11 @@ int Opt_S = 1;
 int Opt_T = 1;
 int linenum = 1;
 char buf[MAX_LINE_LENG];
-char str_buf[MAX_STR_LENG];
+char str_buf[MAX_STR_LENG];     // buffer for string.
 
+// Replace t in string with p. 
 int str_replace(char *des, const char *src, const char *t, const char *p)
-{   
+{
     const char *temp1;
     const char *temp2;
     
@@ -24,8 +25,8 @@ int str_replace(char *des, const char *src, const char *t, const char *p)
         temp2 = src;
         while(*temp1==*temp2)
         {
-        	temp1++;
-        	temp2++;
+            temp1++;
+            temp2++;
         }
         if(*temp1==0)
         {
@@ -47,24 +48,37 @@ operators   "+"|"-"|"*"|"/"|"mod"|":="|"<"|"<="|"<>"|">="|">"|"="|"and"|"or"|"no
 keyword     array|begin|boolean|def|do|else|end|false|for|integer|if|of|print|read|real|string|then|to|true|return|var|while
 letter      [a-zA-Z_]
 digit       [0-9]
+  /* Notice "space" doesn't include "newling"(\n). */
 space       [ \t]+
 dec_integer {digit}*
+  /* We don't welcome redundant "0". QAQ */
 float_point [1-9]{digit}*\.{digit}*[1-9]
 scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
 
-%X COMMENT
+  /* Condition for mutiple line comment is "Exclusive start". */
+%X COMMENT                                      
 
 %%
+  /* Delimiters and operators just export "<____>\n" */
 {delimiters}|{operators} {
           token("%s", yytext);
         }
+
+  /* Keyword export "<KW____>\n". */
 {keyword} {
           token("KW%s", yytext);
         }
+
+  /* Export identifiers. */
 {letter}({letter}|{digit})* {
           tokenString(id, yytext);
         }
+
+  /* Ignore space. */
 {space} { LIST; }
+
+  /* Export string.                             */
+  /* [ !#-~] means any visible ASCII without ". */
 \"([ !#-~]|\"\")*\" {
           int len = strlen(yytext);
           yytext[len - 1] = '\0';
@@ -72,15 +86,31 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
           yytext[len - 1] = '\"';
           tokenString(string, str_buf);
         }
+
+  /* Export Octal number.                                */
+  /* Notice that octal number shouldn't include 8 and 9. */
 0([0-7])* { tokenString(oct_integer, yytext); }
+
+  /* Export integer. */
 {dec_integer} { tokenString(integer, yytext); }
+
+  /* Export floating-point. */
 {float_point} { tokenString(float, yytext); }
+
+  /* Export scientific. */
 {scientific} { tokenString(scientific, yytext); }
+
+  /* Pseudocomments. It is like comment. */
 "//&T+".* { LIST; Opt_T = 1; }
 "//&S+".* { LIST; Opt_S = 1; }
 "//&T-".* { LIST; Opt_T = 0; }
 "//&S-".* { LIST; Opt_S = 0; }
+
+  /* Comment. To avoid pesudocomment not work, comment must be placed behind. (first match ^_^) */
 "//".* { LIST; }
+
+  /* Mutiple line comment.                                            */
+  /* Because need export each line in program, I use start condition. */
 "/*" { LIST; BEGIN COMMENT; }
 <COMMENT>. { LIST; }
 <COMMENT>\n {
@@ -96,6 +126,7 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
           linenum++;
           buf[0] = '\0';
         }
+
 .       {
           /* error */
           printf("error at line %d: bad character \"%s\"\n", linenum, yytext );

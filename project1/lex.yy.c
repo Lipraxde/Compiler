@@ -542,7 +542,7 @@ char *yytext;
 #line 1 "<stdin>"
 #line 2 "<stdin>"
 #define LIST               strcat(buf, yytext)
-#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);}
+#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);} // I modfiy this macor. !!TACK CARE!!
 #define tokenChar(t)       {LIST; if (Opt_T) printf("<%c>\n", (t));}
 #define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %d>\n", #t, (i));}
 #define tokenString(t, s)  {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (s));}
@@ -553,10 +553,11 @@ int Opt_S = 1;
 int Opt_T = 1;
 int linenum = 1;
 char buf[MAX_LINE_LENG];
-char str_buf[MAX_STR_LENG];
+char str_buf[MAX_STR_LENG];     // buffer for string.
 
+// Replace t in string with p. 
 int str_replace(char *des, const char *src, const char *t, const char *p)
-{   
+{
     const char *temp1;
     const char *temp2;
     
@@ -566,8 +567,8 @@ int str_replace(char *des, const char *src, const char *t, const char *p)
         temp2 = src;
         while(*temp1==*temp2)
         {
-        	temp1++;
-        	temp2++;
+            temp1++;
+            temp2++;
         }
         if(*temp1==0)
         {
@@ -583,9 +584,13 @@ int str_replace(char *des, const char *src, const char *t, const char *p)
     return 0;
 }
 
-#line 586 "lex.yy.c"
-
-#line 588 "lex.yy.c"
+#line 587 "lex.yy.c"
+#line 52 "<stdin>"
+  /* Notice "space" doesn't include "newling"(\n). */
+  /* We don't welcome redundant "0". QAQ */
+  /* Condition for mutiple line comment is "Exclusive start". */
+                                      
+#line 593 "lex.yy.c"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -803,9 +808,10 @@ YY_DECL
 		}
 
 	{
-#line 57 "<stdin>"
+#line 62 "<stdin>"
 
-#line 808 "lex.yy.c"
+  /* Delimiters and operators just export "<____>\n" */
+#line 814 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -864,33 +870,38 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 58 "<stdin>"
+#line 64 "<stdin>"
 {
           token("%s", yytext);
         }
 	YY_BREAK
+/* Keyword export "<KW____>\n". */
 case 2:
 YY_RULE_SETUP
-#line 61 "<stdin>"
+#line 69 "<stdin>"
 {
           token("KW%s", yytext);
         }
 	YY_BREAK
+/* Export identifiers. */
 case 3:
 YY_RULE_SETUP
-#line 64 "<stdin>"
+#line 74 "<stdin>"
 {
           tokenString(id, yytext);
         }
 	YY_BREAK
+/* Ignore space. */
 case 4:
 YY_RULE_SETUP
-#line 67 "<stdin>"
+#line 79 "<stdin>"
 { LIST; }
 	YY_BREAK
+/* Export string.                             */
+/* [ !#-~] means any visible ASCII without ". */
 case 5:
 YY_RULE_SETUP
-#line 68 "<stdin>"
+#line 83 "<stdin>"
 {
           int len = strlen(yytext);
           yytext[len - 1] = '\0';
@@ -899,65 +910,74 @@ YY_RULE_SETUP
           tokenString(string, str_buf);
         }
 	YY_BREAK
+/* Export Octal number.                                */
+/* Notice that octal number shouldn't include 8 and 9. */
 case 6:
 YY_RULE_SETUP
-#line 75 "<stdin>"
+#line 93 "<stdin>"
 { tokenString(oct_integer, yytext); }
 	YY_BREAK
+/* Export integer. */
 case 7:
 YY_RULE_SETUP
-#line 76 "<stdin>"
+#line 96 "<stdin>"
 { tokenString(integer, yytext); }
 	YY_BREAK
+/* Export floating-point. */
 case 8:
 YY_RULE_SETUP
-#line 77 "<stdin>"
+#line 99 "<stdin>"
 { tokenString(float, yytext); }
 	YY_BREAK
+/* Export scientific. */
 case 9:
 YY_RULE_SETUP
-#line 78 "<stdin>"
+#line 102 "<stdin>"
 { tokenString(scientific, yytext); }
 	YY_BREAK
+/* Pseudocomments. It is like comment. */
 case 10:
 YY_RULE_SETUP
-#line 79 "<stdin>"
+#line 105 "<stdin>"
 { LIST; Opt_T = 1; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 80 "<stdin>"
+#line 106 "<stdin>"
 { LIST; Opt_S = 1; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 81 "<stdin>"
+#line 107 "<stdin>"
 { LIST; Opt_T = 0; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 82 "<stdin>"
+#line 108 "<stdin>"
 { LIST; Opt_S = 0; }
 	YY_BREAK
+/* Comment. To avoid pesudocomment not work, comment must be placed behind. (first match ^_^) */
 case 14:
 YY_RULE_SETUP
-#line 83 "<stdin>"
+#line 111 "<stdin>"
 { LIST; }
 	YY_BREAK
+/* Mutiple line comment.                                            */
+/* Because need export each line in program, I use start condition. */
 case 15:
 YY_RULE_SETUP
-#line 84 "<stdin>"
+#line 115 "<stdin>"
 { LIST; BEGIN COMMENT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 85 "<stdin>"
+#line 116 "<stdin>"
 { LIST; }
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 86 "<stdin>"
+#line 117 "<stdin>"
 {
           if (Opt_S)
             printf("%d: %s\n", linenum, buf);
@@ -967,13 +987,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 92 "<stdin>"
+#line 123 "<stdin>"
 { LIST; BEGIN INITIAL;}
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 93 "<stdin>"
+#line 124 "<stdin>"
 {
           if (Opt_S)
             printf("%d: %s\n", linenum, buf);
@@ -983,7 +1003,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 99 "<stdin>"
+#line 131 "<stdin>"
 {
           /* error */
           printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
@@ -992,10 +1012,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 104 "<stdin>"
+#line 136 "<stdin>"
 ECHO;
 	YY_BREAK
-#line 998 "lex.yy.c"
+#line 1018 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 	yyterminate();
@@ -2001,7 +2021,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 104 "<stdin>"
+#line 136 "<stdin>"
 
 int main( int argc, char **argv )
 {
