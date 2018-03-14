@@ -1,0 +1,149 @@
+1: /*** Delimiters ***/
+<,>
+<;>
+<:>
+<(>
+<)>
+<[>
+<]>
+<(>
+<)>
+<[>
+<]>
+2: , ; : ( ) [ ] () []
+3: 
+4: /*** Arithmetic, Relational, and　Logical Operators ***/
+<+>
+<->
+<*>
+</>
+<mod>
+<:=>
+<<>
+<<=>
+<<>>
+<>=>
+<>>
+<=>
+<and>
+<or>
+<not>
+5: + - * / mod := < <= <> >= > = and or not
+6: 
+7: /*** Keywords ***/
+<KWarray>
+<KWbegin>
+<KWboolean>
+<KWdef>
+<KWdo>
+<KWelse>
+<KWend>
+<KWfalse>
+<KWfor>
+8: array begin boolean def do else end false for
+<KWinteger>
+<KWif>
+<KWof>
+<KWprint>
+<KWread>
+<KWreal>
+<KWstring>
+<KWthen>
+9: integer if of print read real string then
+<KWto>
+<KWtrue>
+<KWreturn>
+<KWvar>
+<KWwhile>
+10: to true return var while
+11: 
+12: /*** Identifiers ***/
+<id: ident>
+<id: Ident>
+<id: _uuw2>
+13: ident Ident _uuw2
+<id: o1234>
+<id: _9283>
+<id: ___A0>
+14: o1234 _9283 ___A0
+15: 
+16: /*** Integer Constants ***/
+<integer: 1233>
+<integer: 5678>
+<integer: 9012>
+<integer: 9990>
+17: 1233 5678 9012 9990
+<oct_integer: 0234>
+<oct_integer: 0123>
+<oct_integer: 0666>
+<oct_integer: 0770>
+18: 0234 0123 0666 0770
+19: 
+20: /*** Floating-Point Constants ***/
+<float: 123.456>
+<float: 789.012>
+21: 123.456 789.012
+22: 
+23: /*** Scientific Notations ***/
+<scientific: 1.23E4>
+<scientific: 1.2E+3>
+<scientific: 1.2E-3>
+24: 1.23E4 1.2E+3 1.2E-3
+<scientific: 1234e5>
+<scientific: 123e+5>
+<scientific: 123e-5>
+25: 1234e5 123e+5 123e-5
+26: 
+27: /*** String Constants ***/
+<string: qwe123e tt>
+<string: 1234>
+<string: 123.456>
+28: "qwe123e tt" "1234" "123.456"
+<string: A _ A>
+<string: aa"bb>
+<string: __^^__>
+29: "A _ A" "aa""bb" "__^^__"
+<string:  " "_"" >
+30: " "" ""_"""" "
+31: 
+32: /*** Whitespace ***/
+<string: space->>
+<string: <-space>
+33: "space->"               "<-space"
+<string:   tab->>
+<string: <-tab  >
+34: "  tab->"		"<-tab  "
+35: 
+36: /*** Comments ***/
+37: // test comment (basic)
+38: /*
+39: multiple
+40:  line
+41:   comments (basic)
+42: */
+43: // this is a comment // line */ /* with some /* delimiters */ before the end
+44: /* this is a comment // line with some /* and
+45: // delimiters */
+46: 
+47: /*** Pseudocomments ***/
+48: //&T-
+49: these tokens should not response
+50: //&T+
+<KWreturn>
+<KWto>
+<id: show>
+<id: tokens>
+51: return to show tokens
+<id: see>
+<id: me>
+<id: see>
+<id: you>
+<id: can>
+<not>
+<id: see>
+<id: can>
+<not>
+<id: find>
+58: //&S+
+59: 
+60:  

@@ -1,6 +1,6 @@
 %{
 #define LIST               strcat(buf, yytext)
-#define token(fmt, ...)    {LIST; if (Opt_T) printf(fmt, __VA_ARGS__);}
+#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);}
 #define tokenChar(t)       {LIST; if (Opt_T) printf("<%c>\n", (t));}
 #define tokenInteger(t, i) {LIST; if (Opt_T) printf("<%s: %d>\n", #t, (i));}
 #define tokenString(t, s)  {LIST; if (Opt_T) printf("<%s: %s>\n", #t, (s));}
@@ -56,22 +56,23 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
 
 %%
 {delimiters}|{operators} {
-          token("<%s>\n", yytext);
+          token("%s", yytext);
         }
 {keyword} {
-          token("<KW%s>\n", yytext);
+          token("KW%s", yytext);
         }
 {letter}({letter}|{digit})* {
           tokenString(id, yytext);
         }
 {space} { LIST; }
-\"({letter}|{digit}|{space}|\"\")*\" {
-          yytext[strlen(yytext) - 1] = '\0';
+\"([ !#-~]|\"\")*\" {
+          int len = strlen(yytext);
+          yytext[len - 1] = '\0';
           str_replace(str_buf, yytext + 1, "\"\"", "\"");
-          yytext[strlen(yytext) - 1] = '\"';
+          yytext[len - 1] = '\"';
           tokenString(string, str_buf);
         }
-0({digit})* { tokenString(oct_integer, yytext); }
+0([0-7])* { tokenString(oct_integer, yytext); }
 {dec_integer} { tokenString(integer, yytext); }
 {float_point} { tokenString(float, yytext); }
 {scientific} { tokenString(scientific, yytext); }
