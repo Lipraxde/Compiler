@@ -87,17 +87,21 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
           tokenString(string, str_buf);
         }
 
-  /* Export Octal number.                                */
-  /* Notice that octal number shouldn't contain 8 and 9. */
-0[1-7]([0-7])* { tokenString(oct_integer, yytext); }
-
   /* Export integer. */
 {dec_integer} { tokenString(integer, yytext); }
+
+  /* Export Octal number.                                */
+  /* Notice that octal number shouldn't contain 8 and 9. */
+  /* But deal with this problem at Praser.               */
+  /* And shouldn't follow by identifier head.            */
+0{digit}* { tokenString(oct_integer, yytext); }
 
   /* Export floating-point. */
 {float_point} { tokenString(float, yytext); }
 
-  /* Export scientific. */
+  /* Export scientific.                                  */
+  /* 0E10E2 !! We need to avoid this PROBLEM !!!         */
+  /* Or ... it is Praser's job ?                         */
 {scientific} { tokenString(scientific, yytext); }
 
   /* Pseudocomments. It is like comment. */

@@ -86,7 +86,9 @@
 19: 0234 0123 0666 0770
 <->
 <oct_integer: 012>
-20: -012
+<oct_integer: 00>
+<oct_integer: 0000>
+20: -012 00   0000
 21: 
 22: /*** Floating-Point Constants ***/
 <float: 123.456>
