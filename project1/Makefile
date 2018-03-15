@@ -22,7 +22,7 @@ lex.yy.c: lex.l
 	$(LEX) --outfile=lex.yy.c < lex.l
 
 $(LOG_DIR)%.log: $(P_DIR)%.p $(ANS_DIR)%.log scanner $(LOG_DIR)
-	@echo "\033[33m======= $(word 2, $^) =======\033[0m"
+	@echo -e "\033[33m=======\t\t$(word 2, $^)\t\t=======\033[0m"
 	@./scanner $< > $@ || true
 	@$(DIFF) $(word 2, $^) $@ || true
 
