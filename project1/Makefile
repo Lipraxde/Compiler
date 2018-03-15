@@ -5,7 +5,7 @@ ANS_DIR = ans_token_log/
 ALL_DIR = P_DIR LOG_DIR ANS_DIR
 
 SRCS    = lex.l
-OBJS    = lex.yy.c scanner t_scanner
+OBJS    = lex.yy.c scanner
 P_SRCS  = $(wildcard $(P_DIR)*.p)
 T_LOGS  = $(P_SRCS:$(P_DIR)%.p=$(LOG_DIR)%.log)
 LEX  := flex
@@ -13,21 +13,18 @@ DIFF := diff
 
 all: scanner
 
-test: clean_log t_scanner $(T_LOGS)
+test: clean_log scanner $(T_LOGS)
 
 scanner: lex.yy.c
 	$(CC) lex.yy.c -lfl -o scanner
 
-t_scanner: lex.yy.c
-	$(CC) -DTEST_MOD lex.yy.c -lfl -o t_scanner
-
 lex.yy.c: lex.l
 	$(LEX) --outfile=lex.yy.c < lex.l
 
-$(LOG_DIR)%.log: $(P_DIR)%.p $(ANS_DIR)%.log t_scanner $(LOG_DIR)
+$(LOG_DIR)%.log: $(P_DIR)%.p $(ANS_DIR)%.log scanner $(LOG_DIR)
 	@echo "\033[33m======= $(word 2, $^) =======\033[0m"
-	@./t_scanner $< > $@
-	-@$(DIFF) $(word 2, $^) $@ || true
+	@./scanner $< > $@ || true
+	@$(DIFF) $(word 2, $^) $@ || true
 
 run: scanner test.p
 	./scanner test.p

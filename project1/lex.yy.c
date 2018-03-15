@@ -1026,17 +1026,15 @@ YY_RULE_SETUP
 {
           /* error */
           printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
-        #ifdef TEST_MOD
           exit(-1);
-        #endif
         }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 137 "<stdin>"
+#line 135 "<stdin>"
 ECHO;
 	YY_BREAK
-#line 1040 "lex.yy.c"
+#line 1038 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 	yyterminate();
@@ -2038,7 +2036,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 137 "<stdin>"
+#line 135 "<stdin>"
 
 
 int main( int argc, char **argv )
