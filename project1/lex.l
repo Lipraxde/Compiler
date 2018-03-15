@@ -130,7 +130,9 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
 .       {
           /* error */
           printf("error at line %d: bad character \"%s\"\n", linenum, yytext );
+        #ifdef TEST_MOD
           exit(-1);
+        #endif
         }
 %%
 int main( int argc, char **argv )
