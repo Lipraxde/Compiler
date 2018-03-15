@@ -48,11 +48,11 @@ operators   "+"|"-"|"*"|"/"|"mod"|":="|"<"|"<="|"<>"|">="|">"|"="|"and"|"or"|"no
 keyword     array|begin|boolean|def|do|else|end|false|for|integer|if|of|print|read|real|string|then|to|true|return|var|while
 letter      [a-zA-Z_]
 digit       [0-9]
-  /* Notice "space" doesn't include "newling"(\n). */
+  /* Notice "space" doesn't contain "newling"(\n). */
 space       [ \t]+
-dec_integer {digit}*
+dec_integer ([1-9]{digit}*)|0
   /* We don't welcome redundant "0". QAQ */
-float_point [1-9]{digit}*\.{digit}*[1-9]
+float_point {dec_integer}\.{digit}*[1-9]
 scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
 
   /* Condition for mutiple line comment is "Exclusive start". */
@@ -88,7 +88,7 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
         }
 
   /* Export Octal number.                                */
-  /* Notice that octal number shouldn't include 8 and 9. */
+  /* Notice that octal number shouldn't contain 8 and 9. */
 0([0-7])* { tokenString(oct_integer, yytext); }
 
   /* Export integer. */
