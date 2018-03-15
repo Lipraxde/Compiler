@@ -52,7 +52,7 @@ digit       [0-9]
 space       [ \t]+
 dec_integer ([1-9]{digit}*)|0
   /* We don't welcome redundant "0". QAQ */
-float_point {dec_integer}\.{digit}*[1-9]
+float_point {dec_integer}\.(({digit}*[1-9])|0)
 scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
 
   /* Condition for mutiple line comment is "Exclusive start". */
@@ -89,7 +89,7 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
 
   /* Export Octal number.                                */
   /* Notice that octal number shouldn't contain 8 and 9. */
-0([0-7])* { tokenString(oct_integer, yytext); }
+0[1-7]([0-7])* { tokenString(oct_integer, yytext); }
 
   /* Export integer. */
 {dec_integer} { tokenString(integer, yytext); }
