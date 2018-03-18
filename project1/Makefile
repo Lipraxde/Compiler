@@ -34,5 +34,6 @@ clean: clean_log
 
 clean_log:
 	-rm $(LOG_DIR)* -f
+	@touch .gitkeep
 
 .PHONY : all test run clean clean_log
