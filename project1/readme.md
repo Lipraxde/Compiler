@@ -26,7 +26,7 @@ scanner 的程式碼
 
 修改過 token() 這個 macor，改為：
 
-#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);}
+`#define token(fmt, ...)    {LIST; if (Opt_T) printf("<" fmt ">\n", ##__VA_ARGS__);}`
 
 有些　Compiler 不支援 ##，出現錯誤的話把它拿掉。
 
