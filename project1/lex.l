@@ -23,7 +23,7 @@ int str_replace(char *des, const char *src, const char *t, const char *p)
     {
         temp1 = t;
         temp2 = src;
-        while(*temp1==*temp2)
+        while((*temp1==*temp2)&&(*temp1!=0))
         {
             temp1++;
             temp2++;
@@ -78,9 +78,9 @@ scientific  ({dec_integer}|{float_point})(E|e)(\+|\-)?{dec_integer}
   /* Ignore space. */
 {space} { LIST; }
 
-  /* Export string.                             */
-  /* [ !#-~] means any visible ASCII without ". */
-\"([ !#-~]|\"\")*\" {
+  /* Export string.                               */
+  /* [ \t!#-~] means any visible ASCII without ". */
+\"([ \t!#-~]|\"\")*\" {
           int len = strlen(yytext);
           yytext[len - 1] = '\0';
           str_replace(str_buf, yytext + 1, "\"\"", "\"");
