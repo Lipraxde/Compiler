@@ -13,9 +13,9 @@ Makefile
 
 ./test_token_log/   自動測試產生的log
 
-Makefile 預設使用 flex，可以用 `$ make LEX=lex` 來更換
+Makefile 預設使用 flex，可以用 $ make LEX=lex 來更換
 
-`$ make test` 有額外使用到 diff、printf，diff可以透過 `$ make DIFF=diff` 來更換
+$ make test 有額外使用到 diff、printf，diff可以透過 $ make DIFF=diff 來更換
 
 在系上的 linux 工作站試過。
 
