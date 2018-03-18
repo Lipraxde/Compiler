@@ -60,12 +60,12 @@
 12: /*** Identifiers ***/
 <id: ident>
 <id: Ident>
-<id: _uuw2>
-13: ident Ident _uuw2
+<id: uuw2>
+13: ident Ident uuw2
 <id: o1234>
-<id: _9283>
-<id: ___A0>
-14: o1234 _9283 ___A0
+<id: R9283>
+<id: A0>
+14: o1234 R9283 A0
 15: 
 16: /*** Integer Constants ***/
 <integer: 1233>

@@ -10,8 +10,8 @@ integer if of print read real string then
 to true return var while
 
 /*** Identifiers ***/
-ident Ident _uuw2
-o1234 _9283 ___A0
+ident Ident uuw2
+o1234 R9283 A0
 
 /*** Integer Constants ***/
 1233 5678 9012 9990

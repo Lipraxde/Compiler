@@ -46,7 +46,8 @@ int str_replace(char *des, const char *src, const char *t, const char *p)
 delimiters  ","|":"|";"|"("|")"|"["|"]"
 operators   "+"|"-"|"*"|"/"|"mod"|":="|"<"|"<="|"<>"|">="|">"|"="|"and"|"or"|"not"
 keyword     array|begin|boolean|def|do|else|end|false|for|integer|if|of|print|read|real|string|then|to|true|return|var|while
-letter      [a-zA-Z_]
+  /* letter      [a-zA-Z_] */
+letter      [a-zA-Z]
 digit       [0-9]
   /* Notice "space" doesn't contain "newling"(\n). */
 space       [ \t]+
