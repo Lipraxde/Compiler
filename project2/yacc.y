@@ -110,10 +110,16 @@ scalar_type      : KWinteger    { debug_log("integer type"); }
                  | KWboolean    { debug_log("boolean type"); }
         ;
 
-define_array     : KWvar var_list COLON KWarray INTEGER KWto INTEGER KWof var_type SEMICOLON
+define_array     : KWvar var_list COLON define_mdarray var_type SEMICOLON
         {
             debug_log("array declaration");
         }
+        ;
+
+define_mdarray   : KWarray INTEGER KWto INTEGER KWof define_mdarray
+                   { debug_log("array dimensional"); }
+                 | KWarray INTEGER KWto INTEGER KWof
+                   { debug_log("array dimensional"); }
         ;
 
 define_const     : KWvar var_list COLON literal_const SEMICOLON
@@ -149,7 +155,8 @@ function      : function_start define_function
         ;
 
 define_function : function_name Lparenthese argument_list Rparenthese func_ret_type
-                  SEMICOLON compound_statement KWend IDENT define_function
+                  SEMICOLON compound_statement KWend IDENT
+                { debug_log("function declaration"); }define_function
                 |
         ;
 
@@ -202,6 +209,7 @@ statement_list  : statement_start define_statement
         ;
 
 define_statement : statement_group define_statement
+                 | compound_statement define_statement
                  |
         ;
 
@@ -220,6 +228,10 @@ simp_statement  : var_reference ASSIGNMENT expression_node
         {
             debug_log("simple statement");
         }
+                | KWprint expression_node
+                { debug_log("simple print"); }
+                | KWread var_reference
+                { debug_log("simple read"); }
         ;
 
 var_reference   : variable_name reference_list
@@ -307,36 +319,19 @@ expression_list : expression_node COMMA expression_list
                 |
         ;
 
-cond_statement : KWif expression_node KWthen statement_group KWelse statement_group KWend KWif
-               | KWif expression_node KWthen statement_group KWend KWif
+cond_statement : KWif expression_node KWthen define_statement KWelse define_statement KWend KWif
+               | KWif expression_node KWthen define_statement KWend KWif
         ;
 
-whil_statement : KWwhile expression_node KWdo statement_group KWend KWdo
+whil_statement : KWwhile expression_node KWdo define_statement KWend KWdo
         ;
 
-for__statement : KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo statement_group KWend
+for__statement : KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
         ;
 
 ret__statement : KWreturn expression_node
         ;
 
-
-/*
-func_invocation : IDENT
-        ;
-
-cond_statement  : KWdef
-        ;
-
-whil_statement  : KWwhile
-        ;
-
-for__statement  : KWfor
-        ;
-
-ret__statement  : KWreturn expression SEMICOLON
-        ;
-*/
 %%
 
 int yyerror( char *msg )

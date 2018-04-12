@@ -51,5 +51,6 @@ a := true and false or a and b and c = 9 > b;
 b := (8+j)mod 8 -4;
 func();
 a := func(ab, 8+9);
+func(func2 + 8 mod a);
 end
 end program
