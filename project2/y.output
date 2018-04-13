@@ -110,10 +110,10 @@
 
    65 var_reference: variable_name reference_list
 
-   66 reference_list: reference_start Lbracket expression_node Rbracket reference_list
-   67               | %empty
+   66 $@2: %empty
 
-   68 reference_start: %empty
+   67 reference_list: Lbracket expression_node Rbracket $@2 reference_list
+   68               | %empty
 
    69 expression_node: expression_start expression
 
@@ -161,14 +161,22 @@
   100                | expression_node
   101                | %empty
 
-  102 cond_statement: KWif expression_node KWthen define_statement KWelse define_statement KWend KWif
-  103               | KWif expression_node KWthen define_statement KWend KWif
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement cond_midd KWelse define_statement KWend KWif
+  103               | cond_start KWif expression_node KWthen define_statement KWend KWif
 
-  104 whil_statement: KWwhile expression_node KWdo define_statement KWend KWdo
+  104 cond_start: %empty
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+  105 cond_midd: %empty
 
-  106 ret__statement: KWreturn expression_node
+  106 whil_statement: while_start KWwhile expression_node KWdo define_statement KWend KWdo
+
+  107 while_start: %empty
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+
+  109 _for_start: %empty
+
+  110 ret__statement: KWreturn expression_node
 
 
 終結語詞，附有它們出現處的規則
@@ -180,9 +188,9 @@ SEMICOLON (259) 1 12 21 24 37 42 56 60 61
 COLON (260) 12 21 24 45 47
 Lparenthese (261) 37 94 98
 Rparenthese (262) 37 94 98
-Lbracket (263) 66
-Rbracket (264) 66
-ASSIGNMENT (265) 62 105
+Lbracket (263) 67
+Rbracket (264) 67
+ASSIGNMENT (265) 62 108
 OP_ADD (266) 85
 OP_DEL (267) 86 92
 OP_MUL (268) 88
@@ -201,11 +209,11 @@ KWarray (280) 22 23
 KWbegin (281) 49
 KWboolean (282) 20
 KWdef (283)
-KWdo (284) 104 105
+KWdo (284) 106 108
 KWelse (285) 102
-KWend (286) 1 37 49 102 103 104 105
+KWend (286) 1 37 49 102 103 106 108
 KWfalse (287) 34
-KWfor (288) 105
+KWfor (288) 108
 KWinteger (289) 17
 KWif (290) 102 103
 KWof (291) 22 23
@@ -214,17 +222,17 @@ KWread (293) 64
 KWreal (294) 18
 KWstring (295) 19
 KWthen (296) 102 103
-KWto (297) 22 23 105
+KWto (297) 22 23 108
 KWtrue (298) 33
-KWreturn (299) 106
+KWreturn (299) 110
 KWvar (300) 12 21 24
-KWwhile (301) 104
+KWwhile (301) 106
 OCTAL (302) 28
 INTEGER (303) 22 23 29
 FLOAT (304) 30
 SCIENTIFIC (305) 31
 STRING (306) 32
-IDENT (307) 1 3 15 37 40 105
+IDENT (307) 1 3 15 37 40 108
 
 
 非終結語詞，附有它們出現處的規則
@@ -266,7 +274,7 @@ define_const (69)
 literal_const (70)
     於左側： 25 26 27, 於右側： 24 97
 number_const (71)
-    於左側： 28 29 30 31, 於右側： 25 105
+    於左側： 28 29 30 31, 於右側： 25 108
 string_const (72)
     於左側： 32, 於右側： 26
 boolean_const (73)
@@ -298,7 +306,7 @@ compound_statement_start (85)
 statement_list (86)
     於左側： 51, 於右側： 49
 define_statement (87)
-    於左側： 52 53 54, 於右側： 51 52 53 102 103 104 105
+    於左側： 52 53 54, 於右側： 51 52 53 102 103 106 108
 statement_start (88)
     於左側： 55, 於右側： 51
 statement_group (89)
@@ -308,11 +316,11 @@ simp_statement (90)
 var_reference (91)
     於左側： 65, 於右側： 62 64 96
 reference_list (92)
-    於左側： 66 67, 於右側： 65 66
-reference_start (93)
-    於左側： 68, 於右側： 66
+    於左側： 67 68, 於右側： 65 67
+$@2 (93)
+    於左側： 66, 於右側： 67
 expression_node (94)
-    於左側： 69, 於右側： 62 63 66 99 100 102 103 104 106
+    於左側： 69, 於右側： 62 63 67 99 100 102 103 106 110
 expression_start (95)
     於左側： 70, 於右側： 69
 expression (96)
@@ -340,12 +348,20 @@ expression_list (106)
     於左側： 99 100 101, 於右側： 98 99
 cond_statement (107)
     於左側： 102 103, 於右側： 57
-whil_statement (108)
-    於左側： 104, 於右側： 58
-for__statement (109)
-    於左側： 105, 於右側： 59
-ret__statement (110)
-    於左側： 106, 於右側： 60
+cond_start (108)
+    於左側： 104, 於右側： 102 103
+cond_midd (109)
+    於左側： 105, 於右側： 102
+whil_statement (110)
+    於左側： 106, 於右側： 58
+while_start (111)
+    於左側： 107, 於右側： 106
+for__statement (112)
+    於左側： 108, 於右側： 59
+_for_start (113)
+    於左側： 109, 於右側： 108
+ret__statement (114)
+    於左側： 110, 於右側： 60
 
 
 狀態 0
@@ -872,29 +888,32 @@ ret__statement (110)
 
    51 statement_list: statement_start . define_statement
 
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
 
     KWend    使用規則 54 以縮減 (define_statement)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
     $預設  使用規則 50 以縮減 (compound_statement_start)
 
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
     compound_statement_start  進入狀態 21
-    define_statement          進入狀態 79
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
+    define_statement          進入狀態 76
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
     ret__statement            進入狀態 87
 
 
@@ -971,63 +990,35 @@ ret__statement (110)
 
 狀態 69
 
-  105 for__statement: KWfor . IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
-
-    IDENT  偏移，並進入狀態 94
-
-
-狀態 70
-
-  102 cond_statement: KWif . expression_node KWthen define_statement KWelse define_statement KWend KWif
-  103               | KWif . expression_node KWthen define_statement KWend KWif
-
-    $預設  使用規則 70 以縮減 (expression_start)
-
-    expression_node   進入狀態 95
-    expression_start  進入狀態 96
-
-
-狀態 71
-
    63 simp_statement: KWprint . expression_node
 
     $預設  使用規則 70 以縮減 (expression_start)
 
-    expression_node   進入狀態 97
-    expression_start  進入狀態 96
+    expression_node   進入狀態 94
+    expression_start  進入狀態 95
 
 
-狀態 72
+狀態 70
 
    64 simp_statement: KWread . var_reference
 
     IDENT  偏移，並進入狀態 25
 
-    variable_name  進入狀態 76
-    var_reference  進入狀態 98
+    variable_name  進入狀態 73
+    var_reference  進入狀態 96
 
 
-狀態 73
+狀態 71
 
-  106 ret__statement: KWreturn . expression_node
-
-    $預設  使用規則 70 以縮減 (expression_start)
-
-    expression_node   進入狀態 99
-    expression_start  進入狀態 96
-
-
-狀態 74
-
-  104 whil_statement: KWwhile . expression_node KWdo define_statement KWend KWdo
+  110 ret__statement: KWreturn . expression_node
 
     $預設  使用規則 70 以縮減 (expression_start)
 
-    expression_node   進入狀態 100
-    expression_start  進入狀態 96
+    expression_node   進入狀態 97
+    expression_start  進入狀態 95
 
 
-狀態 75
+狀態 72
 
    15 variable_name: IDENT .
    40 function_name: IDENT .
@@ -1036,131 +1027,159 @@ ret__statement (110)
     $預設      使用規則 15 以縮減 (variable_name)
 
 
-狀態 76
+狀態 73
 
    65 var_reference: variable_name . reference_list
 
-    Lbracket  使用規則 68 以縮減 (reference_start)
-    $預設   使用規則 67 以縮減 (reference_list)
+    Lbracket  偏移，並進入狀態 98
 
-    reference_list   進入狀態 101
-    reference_start  進入狀態 102
+    $預設  使用規則 68 以縮減 (reference_list)
+
+    reference_list  進入狀態 99
 
 
-狀態 77
+狀態 74
 
    98 func_invocation: function_name . Lparenthese expression_list Rparenthese
 
-    Lparenthese  偏移，並進入狀態 103
+    Lparenthese  偏移，並進入狀態 100
 
 
-狀態 78
+狀態 75
 
    53 define_statement: compound_statement . define_statement
 
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
 
     KWbegin  使用規則 50 以縮減 (compound_statement_start)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
     $預設  使用規則 54 以縮減 (define_statement)
 
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
     compound_statement_start  進入狀態 21
-    define_statement          進入狀態 104
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
+    define_statement          進入狀態 101
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
     ret__statement            進入狀態 87
 
 
-狀態 79
+狀態 76
 
    51 statement_list: statement_start define_statement .
 
     $預設  使用規則 51 以縮減 (statement_list)
 
 
-狀態 80
+狀態 77
 
    52 define_statement: statement_group . define_statement
 
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
 
     KWbegin  使用規則 50 以縮減 (compound_statement_start)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
     $預設  使用規則 54 以縮減 (define_statement)
 
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
     compound_statement_start  進入狀態 21
-    define_statement          進入狀態 105
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
+    define_statement          進入狀態 102
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
     ret__statement            進入狀態 87
 
 
-狀態 81
+狀態 78
 
    56 statement_group: simp_statement . SEMICOLON
 
-    SEMICOLON  偏移，並進入狀態 106
+    SEMICOLON  偏移，並進入狀態 103
 
 
-狀態 82
+狀態 79
 
    62 simp_statement: var_reference . ASSIGNMENT expression_node
 
-    ASSIGNMENT  偏移，並進入狀態 107
+    ASSIGNMENT  偏移，並進入狀態 104
 
 
-狀態 83
+狀態 80
 
    61 statement_group: func_invocation . SEMICOLON
 
-    SEMICOLON  偏移，並進入狀態 108
+    SEMICOLON  偏移，並進入狀態 105
 
 
-狀態 84
+狀態 81
 
    57 statement_group: cond_statement .
 
     $預設  使用規則 57 以縮減 (statement_group)
 
 
-狀態 85
+狀態 82
+
+  102 cond_statement: cond_start . KWif expression_node KWthen define_statement cond_midd KWelse define_statement KWend KWif
+  103               | cond_start . KWif expression_node KWthen define_statement KWend KWif
+
+    KWif  偏移，並進入狀態 106
+
+
+狀態 83
 
    58 statement_group: whil_statement .
 
     $預設  使用規則 58 以縮減 (statement_group)
 
 
-狀態 86
+狀態 84
+
+  106 whil_statement: while_start . KWwhile expression_node KWdo define_statement KWend KWdo
+
+    KWwhile  偏移，並進入狀態 107
+
+
+狀態 85
 
    59 statement_group: for__statement .
 
     $預設  使用規則 59 以縮減 (statement_group)
+
+
+狀態 86
+
+  108 for__statement: _for_start . KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+
+    KWfor  偏移，並進入狀態 108
 
 
 狀態 87
@@ -1233,26 +1252,18 @@ ret__statement (110)
 
 狀態 94
 
-  105 for__statement: KWfor IDENT . ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+   63 simp_statement: KWprint expression_node .
 
-    ASSIGNMENT  偏移，並進入狀態 115
+    $預設  使用規則 63 以縮減 (simp_statement)
 
 
 狀態 95
 
-  102 cond_statement: KWif expression_node . KWthen define_statement KWelse define_statement KWend KWif
-  103               | KWif expression_node . KWthen define_statement KWend KWif
-
-    KWthen  偏移，並進入狀態 116
-
-
-狀態 96
-
    69 expression_node: expression_start . expression
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    TF_NOT       偏移，並進入狀態 119
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
+    TF_NOT       偏移，並進入狀態 117
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1260,117 +1271,134 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expression       進入狀態 122
-    expr_order8      進入狀態 123
-    expr_order7      進入狀態 124
-    expr_order6      進入狀態 125
-    expr_order5      進入狀態 126
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expression       進入狀態 120
+    expr_order8      進入狀態 121
+    expr_order7      進入狀態 122
+    expr_order6      進入狀態 123
+    expr_order5      進入狀態 124
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
-狀態 97
-
-   63 simp_statement: KWprint expression_node .
-
-    $預設  使用規則 63 以縮減 (simp_statement)
-
-
-狀態 98
+狀態 96
 
    64 simp_statement: KWread var_reference .
 
     $預設  使用規則 64 以縮減 (simp_statement)
 
 
+狀態 97
+
+  110 ret__statement: KWreturn expression_node .
+
+    $預設  使用規則 110 以縮減 (ret__statement)
+
+
+狀態 98
+
+   67 reference_list: Lbracket . expression_node Rbracket $@2 reference_list
+
+    $預設  使用規則 70 以縮減 (expression_start)
+
+    expression_node   進入狀態 130
+    expression_start  進入狀態 95
+
+
 狀態 99
-
-  106 ret__statement: KWreturn expression_node .
-
-    $預設  使用規則 106 以縮減 (ret__statement)
-
-
-狀態 100
-
-  104 whil_statement: KWwhile expression_node . KWdo define_statement KWend KWdo
-
-    KWdo  偏移，並進入狀態 132
-
-
-狀態 101
 
    65 var_reference: variable_name reference_list .
 
     $預設  使用規則 65 以縮減 (var_reference)
 
 
-狀態 102
-
-   66 reference_list: reference_start . Lbracket expression_node Rbracket reference_list
-
-    Lbracket  偏移，並進入狀態 133
-
-
-狀態 103
+狀態 100
 
    98 func_invocation: function_name Lparenthese . expression_list Rparenthese
 
     Rparenthese  使用規則 101 以縮減 (expression_list)
     $預設      使用規則 70 以縮減 (expression_start)
 
-    expression_node   進入狀態 134
-    expression_start  進入狀態 96
-    expression_list   進入狀態 135
+    expression_node   進入狀態 131
+    expression_start  進入狀態 95
+    expression_list   進入狀態 132
 
 
-狀態 104
+狀態 101
 
    53 define_statement: compound_statement define_statement .
 
     $預設  使用規則 53 以縮減 (define_statement)
 
 
-狀態 105
+狀態 102
 
    52 define_statement: statement_group define_statement .
 
     $預設  使用規則 52 以縮減 (define_statement)
 
 
-狀態 106
+狀態 103
 
    56 statement_group: simp_statement SEMICOLON .
 
     $預設  使用規則 56 以縮減 (statement_group)
 
 
-狀態 107
+狀態 104
 
    62 simp_statement: var_reference ASSIGNMENT . expression_node
 
     $預設  使用規則 70 以縮減 (expression_start)
 
-    expression_node   進入狀態 136
-    expression_start  進入狀態 96
+    expression_node   進入狀態 133
+    expression_start  進入狀態 95
 
 
-狀態 108
+狀態 105
 
    61 statement_group: func_invocation SEMICOLON .
 
     $預設  使用規則 61 以縮減 (statement_group)
+
+
+狀態 106
+
+  102 cond_statement: cond_start KWif . expression_node KWthen define_statement cond_midd KWelse define_statement KWend KWif
+  103               | cond_start KWif . expression_node KWthen define_statement KWend KWif
+
+    $預設  使用規則 70 以縮減 (expression_start)
+
+    expression_node   進入狀態 134
+    expression_start  進入狀態 95
+
+
+狀態 107
+
+  106 whil_statement: while_start KWwhile . expression_node KWdo define_statement KWend KWdo
+
+    $預設  使用規則 70 以縮減 (expression_start)
+
+    expression_node   進入狀態 135
+    expression_start  進入狀態 95
+
+
+狀態 108
+
+  108 for__statement: _for_start KWfor . IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+
+    IDENT  偏移，並進入狀態 136
 
 
 狀態 109
@@ -1421,54 +1449,70 @@ ret__statement (110)
 
 狀態 115
 
-  105 for__statement: KWfor IDENT ASSIGNMENT . number_const KWto number_const KWdo define_statement KWend KWdo
+   94 expr_order1: Lparenthese . expression Rparenthese
 
-    OCTAL       偏移，並進入狀態 45
-    INTEGER     偏移，並進入狀態 46
-    FLOAT       偏移，並進入狀態 47
-    SCIENTIFIC  偏移，並進入狀態 48
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
+    TF_NOT       偏移，並進入狀態 117
+    KWfalse      偏移，並進入狀態 40
+    KWtrue       偏移，並進入狀態 44
+    OCTAL        偏移，並進入狀態 45
+    INTEGER      偏移，並進入狀態 46
+    FLOAT        偏移，並進入狀態 47
+    SCIENTIFIC   偏移，並進入狀態 48
+    STRING       偏移，並進入狀態 49
+    IDENT        偏移，並進入狀態 72
 
-    number_const  進入狀態 139
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
+    number_const     進入狀態 54
+    string_const     進入狀態 55
+    boolean_const    進入狀態 56
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expression       進入狀態 139
+    expr_order8      進入狀態 121
+    expr_order7      進入狀態 122
+    expr_order6      進入狀態 123
+    expr_order5      進入狀態 124
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 116
 
-  102 cond_statement: KWif expression_node KWthen . define_statement KWelse define_statement KWend KWif
-  103               | KWif expression_node KWthen . define_statement KWend KWif
+   92 expr_order2: OP_DEL . expr_order1
 
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
+    Lparenthese  偏移，並進入狀態 115
+    KWfalse      偏移，並進入狀態 40
+    KWtrue       偏移，並進入狀態 44
+    OCTAL        偏移，並進入狀態 45
+    INTEGER      偏移，並進入狀態 46
+    FLOAT        偏移，並進入狀態 47
+    SCIENTIFIC   偏移，並進入狀態 48
+    STRING       偏移，並進入狀態 49
+    IDENT        偏移，並進入狀態 72
 
-    KWbegin  使用規則 50 以縮減 (compound_statement_start)
-    $預設  使用規則 54 以縮減 (define_statement)
-
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
-    compound_statement_start  進入狀態 21
-    define_statement          進入狀態 140
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
-    ret__statement            進入狀態 87
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
+    number_const     進入狀態 54
+    string_const     進入狀態 55
+    boolean_const    進入狀態 56
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order1      進入狀態 140
+    func_invocation  進入狀態 129
 
 
 狀態 117
 
-   94 expr_order1: Lparenthese . expression Rparenthese
+   76 expr_order6: TF_NOT . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    TF_NOT       偏移，並進入狀態 119
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1476,138 +1520,79 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expression       進入狀態 141
-    expr_order8      進入狀態 123
-    expr_order7      進入狀態 124
-    expr_order6      進入狀態 125
-    expr_order5      進入狀態 126
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 141
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 118
-
-   92 expr_order2: OP_DEL . expr_order1
-
-    Lparenthese  偏移，並進入狀態 117
-    KWfalse      偏移，並進入狀態 40
-    KWtrue       偏移，並進入狀態 44
-    OCTAL        偏移，並進入狀態 45
-    INTEGER      偏移，並進入狀態 46
-    FLOAT        偏移，並進入狀態 47
-    SCIENTIFIC   偏移，並進入狀態 48
-    STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
-
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
-    number_const     進入狀態 54
-    string_const     進入狀態 55
-    boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order1      進入狀態 142
-    func_invocation  進入狀態 131
-
-
-狀態 119
-
-   76 expr_order6: TF_NOT . expr_order5
-
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    KWfalse      偏移，並進入狀態 40
-    KWtrue       偏移，並進入狀態 44
-    OCTAL        偏移，並進入狀態 45
-    INTEGER      偏移，並進入狀態 46
-    FLOAT        偏移，並進入狀態 47
-    SCIENTIFIC   偏移，並進入狀態 48
-    STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
-
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
-    number_const     進入狀態 54
-    string_const     進入狀態 55
-    boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 143
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
-
-
-狀態 120
 
    97 expr_order1: literal_const .
 
     $預設  使用規則 97 以縮減 (expr_order1)
 
 
-狀態 121
+狀態 119
 
    96 expr_order1: var_reference .
 
     $預設  使用規則 96 以縮減 (expr_order1)
 
 
-狀態 122
+狀態 120
 
    69 expression_node: expression_start expression .
 
     $預設  使用規則 69 以縮減 (expression_node)
 
 
-狀態 123
+狀態 121
 
    71 expression: expr_order8 .
    72 expr_order8: expr_order8 . TF_OR expr_order7
 
-    TF_OR  偏移，並進入狀態 144
+    TF_OR  偏移，並進入狀態 142
 
     $預設  使用規則 71 以縮減 (expression)
 
 
-狀態 124
+狀態 122
 
    73 expr_order8: expr_order7 .
    74 expr_order7: expr_order7 . TF_AND expr_order6
 
-    TF_AND  偏移，並進入狀態 145
+    TF_AND  偏移，並進入狀態 143
 
     $預設  使用規則 73 以縮減 (expr_order8)
 
 
-狀態 125
+狀態 123
 
    75 expr_order7: expr_order6 .
 
     $預設  使用規則 75 以縮減 (expr_order7)
 
 
-狀態 126
+狀態 124
 
    77 expr_order6: expr_order5 .
 
     $預設  使用規則 77 以縮減 (expr_order6)
 
 
-狀態 127
+狀態 125
 
    78 expr_order5: expr_order4 . OP_LT expr_order5
    79            | expr_order4 . OP_LE expr_order5
@@ -1619,115 +1604,104 @@ ret__statement (110)
    85 expr_order4: expr_order4 . OP_ADD expr_order3
    86            | expr_order4 . OP_DEL expr_order3
 
-    OP_ADD  偏移，並進入狀態 146
-    OP_DEL  偏移，並進入狀態 147
-    OP_LT   偏移，並進入狀態 148
-    OP_LE   偏移，並進入狀態 149
-    OP_GT   偏移，並進入狀態 150
-    OP_GE   偏移，並進入狀態 151
-    OP_EQ   偏移，並進入狀態 152
-    OP_NE   偏移，並進入狀態 153
+    OP_ADD  偏移，並進入狀態 144
+    OP_DEL  偏移，並進入狀態 145
+    OP_LT   偏移，並進入狀態 146
+    OP_LE   偏移，並進入狀態 147
+    OP_GT   偏移，並進入狀態 148
+    OP_GE   偏移，並進入狀態 149
+    OP_EQ   偏移，並進入狀態 150
+    OP_NE   偏移，並進入狀態 151
 
     $預設  使用規則 84 以縮減 (expr_order5)
 
 
-狀態 128
+狀態 126
 
    87 expr_order4: expr_order3 .
    88 expr_order3: expr_order3 . OP_MUL expr_order2
    89            | expr_order3 . OP_DIV expr_order2
    90            | expr_order3 . OP_MOD expr_order2
 
-    OP_MUL  偏移，並進入狀態 154
-    OP_DIV  偏移，並進入狀態 155
-    OP_MOD  偏移，並進入狀態 156
+    OP_MUL  偏移，並進入狀態 152
+    OP_DIV  偏移，並進入狀態 153
+    OP_MOD  偏移，並進入狀態 154
 
     $預設  使用規則 87 以縮減 (expr_order4)
 
 
-狀態 129
+狀態 127
 
    91 expr_order3: expr_order2 .
 
     $預設  使用規則 91 以縮減 (expr_order3)
 
 
-狀態 130
+狀態 128
 
    93 expr_order2: expr_order1 .
 
     $預設  使用規則 93 以縮減 (expr_order2)
 
 
-狀態 131
+狀態 129
 
    95 expr_order1: func_invocation .
 
     $預設  使用規則 95 以縮減 (expr_order1)
 
 
-狀態 132
+狀態 130
 
-  104 whil_statement: KWwhile expression_node KWdo . define_statement KWend KWdo
+   67 reference_list: Lbracket expression_node . Rbracket $@2 reference_list
 
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
-
-    KWend    使用規則 54 以縮減 (define_statement)
-    $預設  使用規則 50 以縮減 (compound_statement_start)
-
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
-    compound_statement_start  進入狀態 21
-    define_statement          進入狀態 157
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
-    ret__statement            進入狀態 87
+    Rbracket  偏移，並進入狀態 155
 
 
-狀態 133
-
-   66 reference_list: reference_start Lbracket . expression_node Rbracket reference_list
-
-    $預設  使用規則 70 以縮減 (expression_start)
-
-    expression_node   進入狀態 158
-    expression_start  進入狀態 96
-
-
-狀態 134
+狀態 131
 
    99 expression_list: expression_node . COMMA expression_list
   100                | expression_node .
 
-    COMMA  偏移，並進入狀態 159
+    COMMA  偏移，並進入狀態 156
 
     $預設  使用規則 100 以縮減 (expression_list)
 
 
-狀態 135
+狀態 132
 
    98 func_invocation: function_name Lparenthese expression_list . Rparenthese
 
-    Rparenthese  偏移，並進入狀態 160
+    Rparenthese  偏移，並進入狀態 157
 
 
-狀態 136
+狀態 133
 
    62 simp_statement: var_reference ASSIGNMENT expression_node .
 
     $預設  使用規則 62 以縮減 (simp_statement)
+
+
+狀態 134
+
+  102 cond_statement: cond_start KWif expression_node . KWthen define_statement cond_midd KWelse define_statement KWend KWif
+  103               | cond_start KWif expression_node . KWthen define_statement KWend KWif
+
+    KWthen  偏移，並進入狀態 158
+
+
+狀態 135
+
+  106 whil_statement: while_start KWwhile expression_node . KWdo define_statement KWend KWdo
+
+    KWdo  偏移，並進入狀態 159
+
+
+狀態 136
+
+  108 for__statement: _for_start KWfor IDENT . ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+
+    ASSIGNMENT  偏移，並進入狀態 160
 
 
 狀態 137
@@ -1751,48 +1725,32 @@ ret__statement (110)
 
 狀態 139
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const . KWto number_const KWdo define_statement KWend KWdo
+   94 expr_order1: Lparenthese expression . Rparenthese
 
-    KWto  偏移，並進入狀態 163
+    Rparenthese  偏移，並進入狀態 163
 
 
 狀態 140
-
-  102 cond_statement: KWif expression_node KWthen define_statement . KWelse define_statement KWend KWif
-  103               | KWif expression_node KWthen define_statement . KWend KWif
-
-    KWelse  偏移，並進入狀態 164
-    KWend   偏移，並進入狀態 165
-
-
-狀態 141
-
-   94 expr_order1: Lparenthese expression . Rparenthese
-
-    Rparenthese  偏移，並進入狀態 166
-
-
-狀態 142
 
    92 expr_order2: OP_DEL expr_order1 .
 
     $預設  使用規則 92 以縮減 (expr_order2)
 
 
-狀態 143
+狀態 141
 
    76 expr_order6: TF_NOT expr_order5 .
 
     $預設  使用規則 76 以縮減 (expr_order6)
 
 
-狀態 144
+狀態 142
 
    72 expr_order8: expr_order8 TF_OR . expr_order7
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    TF_NOT       偏移，並進入狀態 119
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
+    TF_NOT       偏移，並進入狀態 117
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1800,32 +1758,91 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order7      進入狀態 167
-    expr_order6      進入狀態 125
-    expr_order5      進入狀態 126
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order7      進入狀態 164
+    expr_order6      進入狀態 123
+    expr_order5      進入狀態 124
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
+
+
+狀態 143
+
+   74 expr_order7: expr_order7 TF_AND . expr_order6
+
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
+    TF_NOT       偏移，並進入狀態 117
+    KWfalse      偏移，並進入狀態 40
+    KWtrue       偏移，並進入狀態 44
+    OCTAL        偏移，並進入狀態 45
+    INTEGER      偏移，並進入狀態 46
+    FLOAT        偏移，並進入狀態 47
+    SCIENTIFIC   偏移，並進入狀態 48
+    STRING       偏移，並進入狀態 49
+    IDENT        偏移，並進入狀態 72
+
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
+    number_const     進入狀態 54
+    string_const     進入狀態 55
+    boolean_const    進入狀態 56
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order6      進入狀態 165
+    expr_order5      進入狀態 124
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
+
+
+狀態 144
+
+   85 expr_order4: expr_order4 OP_ADD . expr_order3
+
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
+    KWfalse      偏移，並進入狀態 40
+    KWtrue       偏移，並進入狀態 44
+    OCTAL        偏移，並進入狀態 45
+    INTEGER      偏移，並進入狀態 46
+    FLOAT        偏移，並進入狀態 47
+    SCIENTIFIC   偏移，並進入狀態 48
+    STRING       偏移，並進入狀態 49
+    IDENT        偏移，並進入狀態 72
+
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
+    number_const     進入狀態 54
+    string_const     進入狀態 55
+    boolean_const    進入狀態 56
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order3      進入狀態 166
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 145
 
-   74 expr_order7: expr_order7 TF_AND . expr_order6
+   86 expr_order4: expr_order4 OP_DEL . expr_order3
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    TF_NOT       偏移，並進入狀態 119
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1833,30 +1850,27 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order6      進入狀態 168
-    expr_order5      進入狀態 126
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order3      進入狀態 167
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 146
 
-   85 expr_order4: expr_order4 OP_ADD . expr_order3
+   78 expr_order5: expr_order4 OP_LT . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1864,27 +1878,29 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order3      進入狀態 169
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 168
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 147
 
-   86 expr_order4: expr_order4 OP_DEL . expr_order3
+   79 expr_order5: expr_order4 OP_LE . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1892,27 +1908,29 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order3      進入狀態 170
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 169
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 148
 
-   78 expr_order5: expr_order4 OP_LT . expr_order5
+   80 expr_order5: expr_order4 OP_GT . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1920,29 +1938,29 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 171
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 170
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 149
 
-   79 expr_order5: expr_order4 OP_LE . expr_order5
+   81 expr_order5: expr_order4 OP_GE . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1950,29 +1968,29 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 172
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 171
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 150
 
-   80 expr_order5: expr_order4 OP_GT . expr_order5
+   82 expr_order5: expr_order4 OP_EQ . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -1980,29 +1998,29 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 173
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 172
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 151
 
-   81 expr_order5: expr_order4 OP_GE . expr_order5
+   83 expr_order5: expr_order4 OP_NE . expr_order5
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -2010,29 +2028,29 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 174
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order5      進入狀態 173
+    expr_order4      進入狀態 125
+    expr_order3      進入狀態 126
+    expr_order2      進入狀態 127
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 152
 
-   82 expr_order5: expr_order4 OP_EQ . expr_order5
+   88 expr_order3: expr_order3 OP_MUL . expr_order2
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -2040,29 +2058,26 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 175
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order2      進入狀態 174
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 153
 
-   83 expr_order5: expr_order4 OP_NE . expr_order5
+   89 expr_order3: expr_order3 OP_DIV . expr_order2
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -2070,29 +2085,26 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order5      進入狀態 176
-    expr_order4      進入狀態 127
-    expr_order3      進入狀態 128
-    expr_order2      進入狀態 129
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order2      進入狀態 175
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 154
 
-   88 expr_order3: expr_order3 OP_MUL . expr_order2
+   90 expr_order3: expr_order3 OP_MOD . expr_order2
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
+    Lparenthese  偏移，並進入狀態 115
+    OP_DEL       偏移，並進入狀態 116
     KWfalse      偏移，並進入狀態 40
     KWtrue       偏移，並進入狀態 44
     OCTAL        偏移，並進入狀態 45
@@ -2100,112 +2112,132 @@ ret__statement (110)
     FLOAT        偏移，並進入狀態 47
     SCIENTIFIC   偏移，並進入狀態 48
     STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    IDENT        偏移，並進入狀態 72
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
+    variable_name    進入狀態 73
+    literal_const    進入狀態 118
     number_const     進入狀態 54
     string_const     進入狀態 55
     boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order2      進入狀態 177
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    function_name    進入狀態 74
+    var_reference    進入狀態 119
+    expr_order2      進入狀態 176
+    expr_order1      進入狀態 128
+    func_invocation  進入狀態 129
 
 
 狀態 155
 
-   89 expr_order3: expr_order3 OP_DIV . expr_order2
+   67 reference_list: Lbracket expression_node Rbracket . $@2 reference_list
 
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    KWfalse      偏移，並進入狀態 40
-    KWtrue       偏移，並進入狀態 44
-    OCTAL        偏移，並進入狀態 45
-    INTEGER      偏移，並進入狀態 46
-    FLOAT        偏移，並進入狀態 47
-    SCIENTIFIC   偏移，並進入狀態 48
-    STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
+    $預設  使用規則 66 以縮減 ($@2)
 
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
-    number_const     進入狀態 54
-    string_const     進入狀態 55
-    boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order2      進入狀態 178
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
+    $@2  進入狀態 177
 
 
 狀態 156
-
-   90 expr_order3: expr_order3 OP_MOD . expr_order2
-
-    Lparenthese  偏移，並進入狀態 117
-    OP_DEL       偏移，並進入狀態 118
-    KWfalse      偏移，並進入狀態 40
-    KWtrue       偏移，並進入狀態 44
-    OCTAL        偏移，並進入狀態 45
-    INTEGER      偏移，並進入狀態 46
-    FLOAT        偏移，並進入狀態 47
-    SCIENTIFIC   偏移，並進入狀態 48
-    STRING       偏移，並進入狀態 49
-    IDENT        偏移，並進入狀態 75
-
-    variable_name    進入狀態 76
-    literal_const    進入狀態 120
-    number_const     進入狀態 54
-    string_const     進入狀態 55
-    boolean_const    進入狀態 56
-    function_name    進入狀態 77
-    var_reference    進入狀態 121
-    expr_order2      進入狀態 179
-    expr_order1      進入狀態 130
-    func_invocation  進入狀態 131
-
-
-狀態 157
-
-  104 whil_statement: KWwhile expression_node KWdo define_statement . KWend KWdo
-
-    KWend  偏移，並進入狀態 180
-
-
-狀態 158
-
-   66 reference_list: reference_start Lbracket expression_node . Rbracket reference_list
-
-    Rbracket  偏移，並進入狀態 181
-
-
-狀態 159
 
    99 expression_list: expression_node COMMA . expression_list
 
     Rparenthese  使用規則 101 以縮減 (expression_list)
     $預設      使用規則 70 以縮減 (expression_start)
 
-    expression_node   進入狀態 134
-    expression_start  進入狀態 96
-    expression_list   進入狀態 182
+    expression_node   進入狀態 131
+    expression_start  進入狀態 95
+    expression_list   進入狀態 178
 
 
-狀態 160
+狀態 157
 
    98 func_invocation: function_name Lparenthese expression_list Rparenthese .
 
     $預設  使用規則 98 以縮減 (func_invocation)
 
 
+狀態 158
+
+  102 cond_statement: cond_start KWif expression_node KWthen . define_statement cond_midd KWelse define_statement KWend KWif
+  103               | cond_start KWif expression_node KWthen . define_statement KWend KWif
+
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
+
+    KWbegin  使用規則 50 以縮減 (compound_statement_start)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
+    $預設  使用規則 54 以縮減 (define_statement)
+
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
+    compound_statement_start  進入狀態 21
+    define_statement          進入狀態 179
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
+    ret__statement            進入狀態 87
+
+
+狀態 159
+
+  106 whil_statement: while_start KWwhile expression_node KWdo . define_statement KWend KWdo
+
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
+
+    KWend    使用規則 54 以縮減 (define_statement)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
+    $預設  使用規則 50 以縮減 (compound_statement_start)
+
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
+    compound_statement_start  進入狀態 21
+    define_statement          進入狀態 180
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
+    ret__statement            進入狀態 87
+
+
+狀態 160
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT . number_const KWto number_const KWdo define_statement KWend KWdo
+
+    OCTAL       偏移，並進入狀態 45
+    INTEGER     偏移，並進入狀態 46
+    FLOAT       偏移，並進入狀態 47
+    SCIENTIFIC  偏移，並進入狀態 48
+
+    number_const  進入狀態 181
+
+
 狀態 161
 
    37 define_function: function_name Lparenthese argument_list Rparenthese func_ret_type SEMICOLON compound_statement KWend . IDENT $@1 define_function
 
-    IDENT  偏移，並進入狀態 183
+    IDENT  偏移，並進入狀態 182
 
 
 狀態 162
@@ -2217,238 +2249,213 @@ ret__statement (110)
 
 狀態 163
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto . number_const KWdo define_statement KWend KWdo
-
-    OCTAL       偏移，並進入狀態 45
-    INTEGER     偏移，並進入狀態 46
-    FLOAT       偏移，並進入狀態 47
-    SCIENTIFIC  偏移，並進入狀態 48
-
-    number_const  進入狀態 184
-
-
-狀態 164
-
-  102 cond_statement: KWif expression_node KWthen define_statement KWelse . define_statement KWend KWif
-
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
-
-    KWend    使用規則 54 以縮減 (define_statement)
-    $預設  使用規則 50 以縮減 (compound_statement_start)
-
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
-    compound_statement_start  進入狀態 21
-    define_statement          進入狀態 185
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
-    ret__statement            進入狀態 87
-
-
-狀態 165
-
-  103 cond_statement: KWif expression_node KWthen define_statement KWend . KWif
-
-    KWif  偏移，並進入狀態 186
-
-
-狀態 166
-
    94 expr_order1: Lparenthese expression Rparenthese .
 
     $預設  使用規則 94 以縮減 (expr_order1)
 
 
-狀態 167
+狀態 164
 
    72 expr_order8: expr_order8 TF_OR expr_order7 .
    74 expr_order7: expr_order7 . TF_AND expr_order6
 
-    TF_AND  偏移，並進入狀態 145
+    TF_AND  偏移，並進入狀態 143
 
     $預設  使用規則 72 以縮減 (expr_order8)
 
 
-狀態 168
+狀態 165
 
    74 expr_order7: expr_order7 TF_AND expr_order6 .
 
     $預設  使用規則 74 以縮減 (expr_order7)
 
 
-狀態 169
+狀態 166
 
    85 expr_order4: expr_order4 OP_ADD expr_order3 .
    88 expr_order3: expr_order3 . OP_MUL expr_order2
    89            | expr_order3 . OP_DIV expr_order2
    90            | expr_order3 . OP_MOD expr_order2
 
-    OP_MUL  偏移，並進入狀態 154
-    OP_DIV  偏移，並進入狀態 155
-    OP_MOD  偏移，並進入狀態 156
+    OP_MUL  偏移，並進入狀態 152
+    OP_DIV  偏移，並進入狀態 153
+    OP_MOD  偏移，並進入狀態 154
 
     $預設  使用規則 85 以縮減 (expr_order4)
 
 
-狀態 170
+狀態 167
 
    86 expr_order4: expr_order4 OP_DEL expr_order3 .
    88 expr_order3: expr_order3 . OP_MUL expr_order2
    89            | expr_order3 . OP_DIV expr_order2
    90            | expr_order3 . OP_MOD expr_order2
 
-    OP_MUL  偏移，並進入狀態 154
-    OP_DIV  偏移，並進入狀態 155
-    OP_MOD  偏移，並進入狀態 156
+    OP_MUL  偏移，並進入狀態 152
+    OP_DIV  偏移，並進入狀態 153
+    OP_MOD  偏移，並進入狀態 154
 
     $預設  使用規則 86 以縮減 (expr_order4)
 
 
-狀態 171
+狀態 168
 
    78 expr_order5: expr_order4 OP_LT expr_order5 .
 
     $預設  使用規則 78 以縮減 (expr_order5)
 
 
-狀態 172
+狀態 169
 
    79 expr_order5: expr_order4 OP_LE expr_order5 .
 
     $預設  使用規則 79 以縮減 (expr_order5)
 
 
-狀態 173
+狀態 170
 
    80 expr_order5: expr_order4 OP_GT expr_order5 .
 
     $預設  使用規則 80 以縮減 (expr_order5)
 
 
-狀態 174
+狀態 171
 
    81 expr_order5: expr_order4 OP_GE expr_order5 .
 
     $預設  使用規則 81 以縮減 (expr_order5)
 
 
-狀態 175
+狀態 172
 
    82 expr_order5: expr_order4 OP_EQ expr_order5 .
 
     $預設  使用規則 82 以縮減 (expr_order5)
 
 
-狀態 176
+狀態 173
 
    83 expr_order5: expr_order4 OP_NE expr_order5 .
 
     $預設  使用規則 83 以縮減 (expr_order5)
 
 
-狀態 177
+狀態 174
 
    88 expr_order3: expr_order3 OP_MUL expr_order2 .
 
     $預設  使用規則 88 以縮減 (expr_order3)
 
 
-狀態 178
+狀態 175
 
    89 expr_order3: expr_order3 OP_DIV expr_order2 .
 
     $預設  使用規則 89 以縮減 (expr_order3)
 
 
-狀態 179
+狀態 176
 
    90 expr_order3: expr_order3 OP_MOD expr_order2 .
 
     $預設  使用規則 90 以縮減 (expr_order3)
 
 
-狀態 180
+狀態 177
 
-  104 whil_statement: KWwhile expression_node KWdo define_statement KWend . KWdo
+   67 reference_list: Lbracket expression_node Rbracket $@2 . reference_list
 
-    KWdo  偏移，並進入狀態 187
+    Lbracket  偏移，並進入狀態 98
 
+    $預設  使用規則 68 以縮減 (reference_list)
 
-狀態 181
-
-   66 reference_list: reference_start Lbracket expression_node Rbracket . reference_list
-
-    Lbracket  使用規則 68 以縮減 (reference_start)
-    $預設   使用規則 67 以縮減 (reference_list)
-
-    reference_list   進入狀態 188
-    reference_start  進入狀態 102
+    reference_list  進入狀態 183
 
 
-狀態 182
+狀態 178
 
    99 expression_list: expression_node COMMA expression_list .
 
     $預設  使用規則 99 以縮減 (expression_list)
 
 
-狀態 183
+狀態 179
+
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement . cond_midd KWelse define_statement KWend KWif
+  103               | cond_start KWif expression_node KWthen define_statement . KWend KWif
+
+    KWend  偏移，並進入狀態 184
+
+    $預設  使用規則 105 以縮減 (cond_midd)
+
+    cond_midd  進入狀態 185
+
+
+狀態 180
+
+  106 whil_statement: while_start KWwhile expression_node KWdo define_statement . KWend KWdo
+
+    KWend  偏移，並進入狀態 186
+
+
+狀態 181
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const . KWto number_const KWdo define_statement KWend KWdo
+
+    KWto  偏移，並進入狀態 187
+
+
+狀態 182
 
    37 define_function: function_name Lparenthese argument_list Rparenthese func_ret_type SEMICOLON compound_statement KWend IDENT . $@1 define_function
 
     $預設  使用規則 36 以縮減 ($@1)
 
-    $@1  進入狀態 189
+    $@1  進入狀態 188
+
+
+狀態 183
+
+   67 reference_list: Lbracket expression_node Rbracket $@2 reference_list .
+
+    $預設  使用規則 67 以縮減 (reference_list)
 
 
 狀態 184
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto number_const . KWdo define_statement KWend KWdo
+  103 cond_statement: cond_start KWif expression_node KWthen define_statement KWend . KWif
 
-    KWdo  偏移，並進入狀態 190
+    KWif  偏移，並進入狀態 189
 
 
 狀態 185
 
-  102 cond_statement: KWif expression_node KWthen define_statement KWelse define_statement . KWend KWif
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement cond_midd . KWelse define_statement KWend KWif
 
-    KWend  偏移，並進入狀態 191
+    KWelse  偏移，並進入狀態 190
 
 
 狀態 186
 
-  103 cond_statement: KWif expression_node KWthen define_statement KWend KWif .
+  106 whil_statement: while_start KWwhile expression_node KWdo define_statement KWend . KWdo
 
-    $預設  使用規則 103 以縮減 (cond_statement)
+    KWdo  偏移，並進入狀態 191
 
 
 狀態 187
 
-  104 whil_statement: KWwhile expression_node KWdo define_statement KWend KWdo .
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto . number_const KWdo define_statement KWend KWdo
 
-    $預設  使用規則 104 以縮減 (whil_statement)
+    OCTAL       偏移，並進入狀態 45
+    INTEGER     偏移，並進入狀態 46
+    FLOAT       偏移，並進入狀態 47
+    SCIENTIFIC  偏移，並進入狀態 48
+
+    number_const  進入狀態 192
 
 
 狀態 188
-
-   66 reference_list: reference_start Lbracket expression_node Rbracket reference_list .
-
-    $預設  使用規則 66 以縮減 (reference_list)
-
-
-狀態 189
 
    37 define_function: function_name Lparenthese argument_list Rparenthese func_ret_type SEMICOLON compound_statement KWend IDENT $@1 . define_function
 
@@ -2456,77 +2463,141 @@ ret__statement (110)
 
     $預設  使用規則 38 以縮減 (define_function)
 
-    define_function  進入狀態 192
+    define_function  進入狀態 193
     function_name    進入狀態 24
+
+
+狀態 189
+
+  103 cond_statement: cond_start KWif expression_node KWthen define_statement KWend KWif .
+
+    $預設  使用規則 103 以縮減 (cond_statement)
 
 
 狀態 190
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo . define_statement KWend KWdo
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement cond_midd KWelse . define_statement KWend KWif
 
-    KWfor     偏移，並進入狀態 69
-    KWif      偏移，並進入狀態 70
-    KWprint   偏移，並進入狀態 71
-    KWread    偏移，並進入狀態 72
-    KWreturn  偏移，並進入狀態 73
-    KWwhile   偏移，並進入狀態 74
-    IDENT     偏移，並進入狀態 75
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
 
     KWend    使用規則 54 以縮減 (define_statement)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
     $預設  使用規則 50 以縮減 (compound_statement_start)
 
-    variable_name             進入狀態 76
-    function_name             進入狀態 77
-    compound_statement        進入狀態 78
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
     compound_statement_start  進入狀態 21
-    define_statement          進入狀態 193
-    statement_group           進入狀態 80
-    simp_statement            進入狀態 81
-    var_reference             進入狀態 82
-    func_invocation           進入狀態 83
-    cond_statement            進入狀態 84
-    whil_statement            進入狀態 85
-    for__statement            進入狀態 86
+    define_statement          進入狀態 194
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
     ret__statement            進入狀態 87
 
 
 狀態 191
 
-  102 cond_statement: KWif expression_node KWthen define_statement KWelse define_statement KWend . KWif
+  106 whil_statement: while_start KWwhile expression_node KWdo define_statement KWend KWdo .
 
-    KWif  偏移，並進入狀態 194
+    $預設  使用規則 106 以縮減 (whil_statement)
 
 
 狀態 192
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const . KWdo define_statement KWend KWdo
+
+    KWdo  偏移，並進入狀態 195
+
+
+狀態 193
 
    37 define_function: function_name Lparenthese argument_list Rparenthese func_ret_type SEMICOLON compound_statement KWend IDENT $@1 define_function .
 
     $預設  使用規則 37 以縮減 (define_function)
 
 
-狀態 193
-
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement . KWend KWdo
-
-    KWend  偏移，並進入狀態 195
-
-
 狀態 194
 
-  102 cond_statement: KWif expression_node KWthen define_statement KWelse define_statement KWend KWif .
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement cond_midd KWelse define_statement . KWend KWif
 
-    $預設  使用規則 102 以縮減 (cond_statement)
+    KWend  偏移，並進入狀態 196
 
 
 狀態 195
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend . KWdo
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo . define_statement KWend KWdo
 
-    KWdo  偏移，並進入狀態 196
+    KWprint   偏移，並進入狀態 69
+    KWread    偏移，並進入狀態 70
+    KWreturn  偏移，並進入狀態 71
+    IDENT     偏移，並進入狀態 72
+
+    KWend    使用規則 54 以縮減 (define_statement)
+    KWfor    使用規則 109 以縮減 (_for_start)
+    KWif     使用規則 104 以縮減 (cond_start)
+    KWwhile  使用規則 107 以縮減 (while_start)
+    $預設  使用規則 50 以縮減 (compound_statement_start)
+
+    variable_name             進入狀態 73
+    function_name             進入狀態 74
+    compound_statement        進入狀態 75
+    compound_statement_start  進入狀態 21
+    define_statement          進入狀態 197
+    statement_group           進入狀態 77
+    simp_statement            進入狀態 78
+    var_reference             進入狀態 79
+    func_invocation           進入狀態 80
+    cond_statement            進入狀態 81
+    cond_start                進入狀態 82
+    whil_statement            進入狀態 83
+    while_start               進入狀態 84
+    for__statement            進入狀態 85
+    _for_start                進入狀態 86
+    ret__statement            進入狀態 87
 
 
 狀態 196
 
-  105 for__statement: KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo .
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement cond_midd KWelse define_statement KWend . KWif
 
-    $預設  使用規則 105 以縮減 (for__statement)
+    KWif  偏移，並進入狀態 198
+
+
+狀態 197
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement . KWend KWdo
+
+    KWend  偏移，並進入狀態 199
+
+
+狀態 198
+
+  102 cond_statement: cond_start KWif expression_node KWthen define_statement cond_midd KWelse define_statement KWend KWif .
+
+    $預設  使用規則 102 以縮減 (cond_statement)
+
+
+狀態 199
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend . KWdo
+
+    KWdo  偏移，並進入狀態 200
+
+
+狀態 200
+
+  108 for__statement: _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo .
+
+    $預設  使用規則 108 以縮減 (for__statement)

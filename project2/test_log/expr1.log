@@ -1,0 +1,85 @@
+[35m#Parser: [33mprogram node {[0m
+1: /**
+2:  * expr1.p: expression
+3:  */
+4: //&T-
+	[35m#Parser: [33mprogram name[0m
+	[35m#Parser: [33mprogram body {[0m
+		[35m#Parser: [33mvariable node {[0m
+5: expr1;
+6: 
+7: 
+			[35m#Parser: [33mvariable }[0m
+		[35m#Parser: [33mfunction node {[0m
+			[35m#Parser: [33mfunction }[0m
+		[35m#Parser: [33mcompound statement node {[0m
+			[35m#Parser: [33mvariable node {[0m
+8: begin
+9: 
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33minteger type[0m
+				[35m#Parser: [33mvariable declaration[0m
+10:         var a, b: integer;
+				[35m#Parser: [33mvariable }[0m
+			[35m#Parser: [33mstatement node {[0m
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mexpression node {[0m
+					[35m#Parser: [33minteger const[0m
+					[35m#Parser: [33mexpression }[0m
+				[35m#Parser: [33msimple statement[0m
+11:         a := 2;
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mexpression node {[0m
+					[35m#Parser: [33minteger const[0m
+					[35m#Parser: [33mexpression }[0m
+				[35m#Parser: [33msimple statement[0m
+12:         b:= 3;
+13: 
+				[35m#Parser: [33mexpression node {[0m
+					[35m#Parser: [33minteger const[0m
+					[35m#Parser: [33minteger const[0m
+					[35m#Parser: [33minteger const[0m
+					[35m#Parser: [33minteger const[0m
+					[35m#Parser: [33moperator add[0m
+					[35m#Parser: [33moperator mul[0m
+					[35m#Parser: [33moperator add[0m
+					[35m#Parser: [33mexpression }[0m
+				[35m#Parser: [33msimple print[0m
+14:         print 1+2*(3+4);
+15: 
+				[35m#Parser: [33mcondition node {[0m
+					[35m#Parser: [33mexpression node {[0m
+						[35m#Parser: [33mvariable name[0m
+						[35m#Parser: [33mvariable reference[0m
+						[35m#Parser: [33minteger const[0m
+						[35m#Parser: [33moperator mul[0m
+						[35m#Parser: [33minteger const[0m
+						[35m#Parser: [33moperator add[0m
+						[35m#Parser: [33mvariable name[0m
+						[35m#Parser: [33mvariable reference[0m
+						[35m#Parser: [33minteger const[0m
+						[35m#Parser: [33moperator mul[0m
+						[35m#Parser: [33minteger const[0m
+						[35m#Parser: [33moperator mod[0m
+						[35m#Parser: [33mcomparsion no eq[0m
+						[35m#Parser: [33mexpression }[0m
+16:         if a*3+1 <> b*4 mod 123 then
+					[35m#Parser: [33mexpression node {[0m
+						[35m#Parser: [33mstring const[0m
+						[35m#Parser: [33mexpression }[0m
+					[35m#Parser: [33msimple print[0m
+17:                 print "test";
+					[35m#Parser: [33mcondition }[0m
+18:         end if
+19: 
+				[35m#Parser: [33mstatement }[0m
+			[35m#Parser: [33mcompound statement }[0m
+		[35m#Parser: [33mprogram body }[0m
+20: end
+	[35m#Parser: [33mprogram }[0m
+21: end expr1
+
+|--------------------------------|
+|  There is no syntactic error!  |
+|--------------------------------|

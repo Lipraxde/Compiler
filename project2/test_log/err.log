@@ -1,0 +1,41 @@
+
+|--------------------------------------------------------------------------
+| Error found in Line #10: 	end iff
+|
+| Unmatched token: iff
+|--------------------------------------------------------------------------
+[35m#Parser: [33mprogram node {[0m
+1: /**
+2:  * err.p: a simple syntactic error case
+3:  */
+4: //&T-
+	[35m#Parser: [33mprogram name[0m
+	[35m#Parser: [33mprogram body {[0m
+		[35m#Parser: [33mvariable node {[0m
+5: err;
+6: 
+			[35m#Parser: [33mvariable }[0m
+		[35m#Parser: [33mfunction node {[0m
+			[35m#Parser: [33mfunction }[0m
+		[35m#Parser: [33mcompound statement node {[0m
+			[35m#Parser: [33mvariable node {[0m
+7: begin
+8: 	//int a = 3;
+				[35m#Parser: [33mvariable }[0m
+			[35m#Parser: [33mstatement node {[0m
+				[35m#Parser: [33mcondition node {[0m
+					[35m#Parser: [33mexpression node {[0m
+						[35m#Parser: [33mvariable name[0m
+						[35m#Parser: [33mvariable reference[0m
+						[35m#Parser: [33minteger const[0m
+						[35m#Parser: [33mcomparsion eq[0m
+						[35m#Parser: [33mexpression }[0m
+					[35m#Parser: [33mvariable name[0m
+					[35m#Parser: [33mexpression node {[0m
+						[35m#Parser: [33mvariable name[0m
+						[35m#Parser: [33mvariable reference[0m
+						[35m#Parser: [33minteger const[0m
+						[35m#Parser: [33moperator add[0m
+						[35m#Parser: [33mexpression }[0m
+					[35m#Parser: [33msimple statement[0m
+9: 	if a = 10 then i := i+1; 

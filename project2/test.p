@@ -52,5 +52,8 @@ b := (8+j)mod 8 -4;
 func();
 a := func(ab, 8+9);
 func(func2 + 8 mod a);
+if 87 then
+
+end if
 end
 end program

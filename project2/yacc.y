@@ -235,22 +235,14 @@ simp_statement  : var_reference ASSIGNMENT expression_node
         ;
 
 var_reference   : variable_name reference_list
+                { debug_log("variable reference"); }
         ;
 
-reference_list  : reference_start Lbracket expression_node Rbracket reference_list
-        {
-            debug_log("index }");
-            depth--;
-        }
+reference_list  : Lbracket expression_node Rbracket
+                { debug_log("variable reference argument"); }  reference_list
                 |
         ;
 
-reference_start :
-        {
-            debug_log("index node {");
-            depth++;
-        }
-        ;
 
 expression_node : expression_start expression
         {
@@ -304,7 +296,6 @@ expr_order2     : OP_DEL expr_order1                { debug_log("operator get ne
 expr_order1     : Lparenthese expression Rparenthese
                 | func_invocation 
                 | var_reference
-                { debug_log("variable reference"); }
                 | literal_const
         ;
 
@@ -319,17 +310,45 @@ expression_list : expression_node COMMA expression_list
                 |
         ;
 
-cond_statement : KWif expression_node KWthen define_statement KWelse define_statement KWend KWif
-               | KWif expression_node KWthen define_statement KWend KWif
+cond_statement : cond_start KWif expression_node KWthen define_statement cond_midd KWelse define_statement KWend KWif
+        {
+            debug_log("condition }");
+            depth--;
+        }
+               | cond_start KWif expression_node KWthen define_statement KWend KWif
+        {
+            debug_log("condition }");
+            depth--;
+        }
         ;
 
-whil_statement : KWwhile expression_node KWdo define_statement KWend KWdo
+cond_start : { debug_log("condition node {");                           depth++; }
         ;
 
-for__statement : KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+cond_midd  : { debug_log("else part"); }
         ;
 
-ret__statement : KWreturn expression_node
+whil_statement : while_start KWwhile expression_node KWdo define_statement KWend KWdo
+        {
+            debug_log("while }");
+            depth--;
+        }
+        ;
+
+while_start : { debug_log("while node {");                              depth++; }
+        ;
+
+for__statement : _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+        {
+            debug_log("for }");
+            depth--;
+        }
+        ;
+
+_for_start : { debug_log("for node {");                                  depth++; }
+        ;
+
+ret__statement : KWreturn expression_node { debug_log("return"); }
         ;
 
 %%

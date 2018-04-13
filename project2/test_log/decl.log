@@ -1,0 +1,105 @@
+[35m#Parser: [33mprogram node {[0m
+1: /**
+2:  * decl.p: declarations
+3:  */
+4: //&T-
+	[35m#Parser: [33mprogram name[0m
+	[35m#Parser: [33mprogram body {[0m
+		[35m#Parser: [33mvariable node {[0m
+5: decl;
+6: 
+7: // global variables declaration
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33minteger type[0m
+			[35m#Parser: [33mvariable declaration[0m
+8: var ga: integer;
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mboolean type[0m
+			[35m#Parser: [33mvariable declaration[0m
+9: var gb, gc: boolean;
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mreal type[0m
+			[35m#Parser: [33mvariable declaration[0m
+10: var gd: real;
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mstring type[0m
+			[35m#Parser: [33mvariable declaration[0m
+11: var ge: string;
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33marray dimensional[0m
+			[35m#Parser: [33minteger type[0m
+			[35m#Parser: [33marray declaration[0m
+12: var garray: array 1 to 10 of integer;
+13: 
+14: // global constants declaration
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mfloat const[0m
+			[35m#Parser: [33mconst declaration[0m
+15: var PI: 3.1415926;
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mstring const[0m
+			[35m#Parser: [33mconst declaration[0m
+16: var course: "Introduction to Compiler Design";
+			[35m#Parser: [33mvariable name[0m
+			[35m#Parser: [33mboolean const[0m
+			[35m#Parser: [33mconst declaration[0m
+17: var isPass: true;
+18: 
+			[35m#Parser: [33mvariable }[0m
+		[35m#Parser: [33mfunction node {[0m
+			[35m#Parser: [33mfunction }[0m
+		[35m#Parser: [33mcompound statement node {[0m
+			[35m#Parser: [33mvariable node {[0m
+19: begin
+20:         // local constants declaration
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33minteger const[0m
+				[35m#Parser: [33mconst declaration[0m
+21:         var arraySize: 1024;
+22: 
+23:         // local variables declaration
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33minteger type[0m
+				[35m#Parser: [33mvariable declaration[0m
+24:         var la: integer;
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mboolean type[0m
+				[35m#Parser: [33mvariable declaration[0m
+25:         var lb, lc, ld: boolean;
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mreal type[0m
+				[35m#Parser: [33mvariable declaration[0m
+26:         var le, lf: real;
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33mstring type[0m
+				[35m#Parser: [33mvariable declaration[0m
+27:         var lg: string;
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33marray dimensional[0m
+				[35m#Parser: [33minteger type[0m
+				[35m#Parser: [33marray declaration[0m
+28:         var L1darray: array 1 to 5 of integer;                  // one dimensional
+				[35m#Parser: [33mvariable name[0m
+				[35m#Parser: [33marray dimensional[0m
+				[35m#Parser: [33marray dimensional[0m
+				[35m#Parser: [33minteger type[0m
+				[35m#Parser: [33marray declaration[0m
+29:         var L2darray: array 1 to 5 of array 1 to 3 of integer;  // two dimensional
+30: 
+31: 
+				[35m#Parser: [33mvariable }[0m
+			[35m#Parser: [33mstatement node {[0m
+				[35m#Parser: [33mstatement }[0m
+			[35m#Parser: [33mcompound statement }[0m
+		[35m#Parser: [33mprogram body }[0m
+32: end
+	[35m#Parser: [33mprogram }[0m
+33: end decl
+
+|--------------------------------|
+|  There is no syntactic error!  |
+|--------------------------------|
