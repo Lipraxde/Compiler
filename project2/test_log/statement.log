@@ -1,212 +1,63 @@
-[35m#Parser: [33mprogram node {[0m
 1: /**
 2:  * statement.p: examples for each statement
 3:  */
 4: //&T-
-	[35m#Parser: [33mprogram name[0m
-	[35m#Parser: [33mprogram body {[0m
-		[35m#Parser: [33mvariable node {[0m
 5: statement;
 6: 
-			[35m#Parser: [33mvariable }[0m
-		[35m#Parser: [33mfunction node {[0m
-			[35m#Parser: [33mfunction name[0m
-			[35m#Parser: [33margument node {[0m
-				[35m#Parser: [33margument }[0m
-			[35m#Parser: [33mno return value[0m
-			[35m#Parser: [33mcompound statement node {[0m
 7: echo();
-				[35m#Parser: [33mvariable node {[0m
 8: begin
-					[35m#Parser: [33mvariable name[0m
-					[35m#Parser: [33mstring type[0m
-					[35m#Parser: [33mvariable declaration[0m
 9:         var s: string;
-					[35m#Parser: [33mvariable }[0m
-				[35m#Parser: [33mstatement node {[0m
-					[35m#Parser: [33mvariable name[0m
-					[35m#Parser: [33msimple read[0m
 10:         read s;         // simple statement
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 11:         print s;        // simple statement
-					[35m#Parser: [33mstatement }[0m
-				[35m#Parser: [33mcompound statement }[0m
 12: end
-			[35m#Parser: [33mfunction declaration[0m
 13: end echo
 14: 
-			[35m#Parser: [33mfunction name[0m
-			[35m#Parser: [33margument node {[0m
-				[35m#Parser: [33margument }[0m
-			[35m#Parser: [33mboolean type[0m
-			[35m#Parser: [33mcompound statement node {[0m
 15: funny(): boolean;
-				[35m#Parser: [33mvariable node {[0m
 16: begin
-					[35m#Parser: [33mvariable }[0m
-				[35m#Parser: [33mstatement node {[0m
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33mcomparsion no eq[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33mreturn[0m
 17:         return 1<>1;    // return statement
-					[35m#Parser: [33mstatement }[0m
-				[35m#Parser: [33mcompound statement }[0m
 18: end 
-			[35m#Parser: [33mfunction declaration[0m
 19: end funny
 20: 
 21: 
-			[35m#Parser: [33mfunction }[0m
-		[35m#Parser: [33mcompound statement node {[0m
-			[35m#Parser: [33mvariable node {[0m
 22: begin
 23: 
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mreal type[0m
-				[35m#Parser: [33mvariable declaration[0m
 24:         var a, b: real;
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33minteger type[0m
-				[35m#Parser: [33mvariable declaration[0m
 25:         var i, k: integer;
 26: 
 27:         // simple statement
-				[35m#Parser: [33mvariable }[0m
-			[35m#Parser: [33mstatement node {[0m
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mexpression node {[0m
-					[35m#Parser: [33mfloat const[0m
-					[35m#Parser: [33mexpression }[0m
-				[35m#Parser: [33msimple statement[0m
 28:         a := 1.0;
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mexpression node {[0m
-					[35m#Parser: [33mfloat const[0m
-					[35m#Parser: [33mexpression }[0m
-				[35m#Parser: [33msimple statement[0m
 29:         b := 2.3E-1;
 30: 
 31:         // compound statement
-				[35m#Parser: [33mcompound statement node {[0m
-					[35m#Parser: [33mvariable node {[0m
 32:         begin
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mboolean type[0m
-						[35m#Parser: [33mvariable declaration[0m
 33:                 var c: boolean;
-						[35m#Parser: [33mvariable }[0m
-					[35m#Parser: [33mstatement node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mexpression node {[0m
-							[35m#Parser: [33mvariable name[0m
-							[35m#Parser: [33mvariable reference[0m
-							[35m#Parser: [33mvariable name[0m
-							[35m#Parser: [33mvariable reference[0m
-							[35m#Parser: [33mcomparsion less[0m
-							[35m#Parser: [33mexpression }[0m
-						[35m#Parser: [33msimple statement[0m
 34:                 c := a < b;
-						[35m#Parser: [33mstatement }[0m
-					[35m#Parser: [33mcompound statement }[0m
 35:         end
 36:         
 37:         // condition statement
-				[35m#Parser: [33mcondition node {[0m
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33mcomparsion greater[0m
-						[35m#Parser: [33mexpression }[0m
 38:         if a > b then
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mstring const[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 39:                 print " a > b \n";
-					[35m#Parser: [33melse part[0m
 40:         else
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mstring const[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 41:                 print " a <= b \n";
-					[35m#Parser: [33mcondition }[0m
 42:         end if
 43: 
 44:         // while statement
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mexpression node {[0m
-					[35m#Parser: [33minteger const[0m
-					[35m#Parser: [33mexpression }[0m
-				[35m#Parser: [33msimple statement[0m
 45:         i := 1;
-				[35m#Parser: [33mwhile node {[0m
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33mcomparsion less eq[0m
-						[35m#Parser: [33mexpression }[0m
 46:         while i <= 10 do
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33moperator mul[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 47:                 print i*i;
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mstring const[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 48:                 print "\n";
-					[35m#Parser: [33mwhile }[0m
 49:         end do
 50: 
 51:         // for statement
-				[35m#Parser: [33mfor node {[0m
-					[35m#Parser: [33minteger const[0m
-					[35m#Parser: [33minteger const[0m
 52:         for k := 10 to 20 do 
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33moperator mul[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 53:                 print k*3;
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mstring const[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33msimple print[0m
 54:                 print "\n";
-					[35m#Parser: [33mfor }[0m
 55:         end do
 56: 
 57:         // function invocation statement 
-				[35m#Parser: [33mfunction name[0m
-				[35m#Parser: [33mfunction invocation[0m
 58:         echo();
 59: 
-				[35m#Parser: [33mstatement }[0m
-			[35m#Parser: [33mcompound statement }[0m
-		[35m#Parser: [33mprogram body }[0m
 60: end
-	[35m#Parser: [33mprogram }[0m
 61: end statement
 
 |--------------------------------|

@@ -1,77 +1,23 @@
-[35m#Parser: [33mprogram node {[0m
 1: /**
 2:  * test.p: simple P language example
 3:  */
 4: //&T-
-	[35m#Parser: [33mprogram name[0m
-	[35m#Parser: [33mprogram body {[0m
-		[35m#Parser: [33mvariable node {[0m
 5: test;
 6: 
-			[35m#Parser: [33mvariable name[0m
-			[35m#Parser: [33minteger type[0m
-			[35m#Parser: [33mvariable declaration[0m
 7: var a: integer;		// global variable
 8: 
-			[35m#Parser: [33mvariable }[0m
-		[35m#Parser: [33mfunction node {[0m
-			[35m#Parser: [33mfunction name[0m
-			[35m#Parser: [33margument node {[0m
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33mvariable name[0m
-				[35m#Parser: [33minteger type[0m
-				[35m#Parser: [33margument declaration[0m
-				[35m#Parser: [33margument }[0m
-			[35m#Parser: [33minteger type[0m
-			[35m#Parser: [33mcompound statement node {[0m
 9: foo( a, b: integer ): integer;
-				[35m#Parser: [33mvariable node {[0m
 10: begin
-					[35m#Parser: [33mvariable }[0m
-				[35m#Parser: [33mstatement node {[0m
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33mvariable name[0m
-						[35m#Parser: [33mvariable reference[0m
-						[35m#Parser: [33moperator mul[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33mreturn[0m
 11: 	return a*b;
-					[35m#Parser: [33mstatement }[0m
-				[35m#Parser: [33mcompound statement }[0m
 12: end
-			[35m#Parser: [33mfunction declaration[0m
 13: end foo
 14: 
 15: // main block
-			[35m#Parser: [33mfunction }[0m
-		[35m#Parser: [33mcompound statement node {[0m
-			[35m#Parser: [33mvariable node {[0m
 16: begin
 17: 
-				[35m#Parser: [33mvariable }[0m
-			[35m#Parser: [33mstatement node {[0m
-				[35m#Parser: [33mexpression node {[0m
-					[35m#Parser: [33mfunction name[0m
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33moperator mul[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33mexpression node {[0m
-						[35m#Parser: [33minteger const[0m
-						[35m#Parser: [33mexpression }[0m
-					[35m#Parser: [33mfunction invocation[0m
-					[35m#Parser: [33mexpression }[0m
-				[35m#Parser: [33msimple print[0m
 18: 	print foo(2*4,3);
 19: 
-				[35m#Parser: [33mstatement }[0m
-			[35m#Parser: [33mcompound statement }[0m
-		[35m#Parser: [33mprogram body }[0m
 20: end
-	[35m#Parser: [33mprogram }[0m
 21: end test
 
 |--------------------------------|

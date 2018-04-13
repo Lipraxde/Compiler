@@ -47,181 +47,195 @@ int yyerror( char *msg );
 
 %token IDENT
 
+%start program
+
 %%
 
-program      : program_start program_name SEMICOLON program_body KWend IDENT
-        {
-            debug_log("program }");
-            depth--;
-        }
-        ;
-
-program_start :         { debug_log("program node {");              depth++; }
-        ;
+ /* name part */
 
 program_name : IDENT    { debug_log("program name"); }
         ;
 
-program_body : program_body_start var_and_const_declar function compound_statement
-        {
-            debug_log("program body }");
-            depth--;
-        }
+var_name     : IDENT        { debug_log("variable name"); }
         ;
 
-program_body_start :    { debug_log("program body {");                  depth++; }
-
- /* declaration variable and constant part */
-var_and_const_declar : var_and_const_declar_start define_var_and_const
-        {
-            debug_log("variable }");
-            depth--;
-        }
+func_name    : IDENT { debug_log("function name"); }
         ;
 
-var_and_const_declar_start : { debug_log("variable node {");            depth++; }
+
+ /* constant data part */
+
+number_const : OCTAL        { debug_log("integer const"); }
+             | INTEGER      { debug_log("integer const"); }
+             | FLOAT        { debug_log("float const"); }
+             | SCIENTIFIC   { debug_log("float const"); }
         ;
 
-define_var_and_const : define_variable define_var_and_const
-                     | define_array define_var_and_const
-                     | define_const define_var_and_const
-                     |
+string_const : STRING       { debug_log("string const"); }
         ;
 
-define_variable  : KWvar var_list COLON var_type SEMICOLON
+bool_const   : KWtrue       { debug_log("boolean const"); }
+             | KWfalse      { debug_log("boolean const"); }
+        ;
+
+const_group  : number_const
+             | string_const
+             | bool_const
+        ;
+
+
+ /* type part */
+
+scalar_type  : KWinteger    { debug_log("integer type"); }
+             | KWreal       { debug_log("real type"); }
+             | KWstring     { debug_log("string type"); }
+             | KWboolean    { debug_log("boolean type"); }
+        ;
+
+var_type     : scalar_type
+        ;
+
+func_ret_type : COLON scalar_type
+              |
+              { debug_log("no return value"); }
+        ;
+
+
+ /* list part */
+
+vacd_list    : define_var   vacd_list
+             | define_array vacd_list
+             | define_const vacd_list
+             |
+        ;
+
+var_list     : var_name COMMA var_list
+             | var_name
+        ;
+
+ddim_list    : KWarray INTEGER KWto INTEGER KWof ddim_list
+             { debug_log("array dimensional"); }
+             | KWarray INTEGER KWto INTEGER KWof
+             { debug_log("array dimensional"); }
+        ;
+
+dfunc_list   : define_func dfunc_list
+             |
+        ;
+
+arg_list     : define_arg SEMICOLON arg_list
+             | define_arg
+             |
+        ;
+
+state_list   : define_state state_list
+             |
+        ;
+
+expr_list    : expression_node COMMA expr_list
+             | expression_node
+             |
+        ;
+
+ref_list     : Lbracket expression_node Rbracket ref_list
+             { debug_log("variable reference argument"); }
+             | Lbracket expression_node Rbracket
+             { debug_log("variable reference argument"); }
+        ;
+
+
+ /* expression part */
+
+expression   : expr_order8
+        ;
+
+expr_order8  : expr_order8 TF_OR expr_order7     { debug_log("boolean opt or"); }
+             | expr_order7
+        ;
+
+expr_order7  : expr_order7 TF_AND expr_order6    { debug_log("boolean opt and"); }
+             | expr_order6
+        ;
+
+expr_order6  : TF_NOT expr_order5                { debug_log("boolean opt not"); }
+             | expr_order5
+        ;
+
+expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less"); }
+             | expr_order4 OP_LE expr_order5     { debug_log("comparsion less eq"); }
+             | expr_order4 OP_GT expr_order5     { debug_log("comparsion greater"); }
+             | expr_order4 OP_GE expr_order5     { debug_log("comparsion greater eq"); }
+             | expr_order4 OP_EQ expr_order5     { debug_log("comparsion eq"); }
+             | expr_order4 OP_NE expr_order5     { debug_log("comparsion no eq"); }
+             | expr_order4
+        ;
+
+expr_order4  : expr_order4 OP_ADD expr_order3    { debug_log("operator add"); }
+             | expr_order4 OP_DEL expr_order3    { debug_log("operator del"); }
+             | expr_order3
+        ;
+
+expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
+             | expr_order3 OP_DIV expr_order2    { debug_log("operator div"); }
+             | expr_order3 OP_MOD expr_order2    { debug_log("operator mod"); }
+             | expr_order2
+        ;
+
+expr_order2  : OP_DEL expr_order1                { debug_log("operator get negative"); }
+             | expr_order1
+        ;
+
+expr_order1  : Lparenthese expression Rparenthese
+             | func_invocation 
+             | var_reference
+             | const_group
+        ;
+
+
+ /* variable and constant declartion part */
+
+define_var   : KWvar var_list COLON var_type SEMICOLON
         {
             debug_log("variable declaration");
         }
         ;
 
-var_list         : variable_name COMMA var_list
-                 | variable_name
-        ;
-
-variable_name    : IDENT        { debug_log("variable name"); }
-        ;
-
-var_type         : scalar_type
-        ;
-
-scalar_type      : KWinteger    { debug_log("integer type"); }
-                 | KWreal       { debug_log("real type"); }
-                 | KWstring     { debug_log("string type"); }
-                 | KWboolean    { debug_log("boolean type"); }
-        ;
-
-define_array     : KWvar var_list COLON define_mdarray var_type SEMICOLON
+define_array : KWvar var_list COLON ddim_list var_type SEMICOLON
         {
             debug_log("array declaration");
         }
         ;
 
-define_mdarray   : KWarray INTEGER KWto INTEGER KWof define_mdarray
-                   { debug_log("array dimensional"); }
-                 | KWarray INTEGER KWto INTEGER KWof
-                   { debug_log("array dimensional"); }
-        ;
-
-define_const     : KWvar var_list COLON literal_const SEMICOLON
+define_const : KWvar var_list COLON const_group SEMICOLON
         {
             debug_log("const declaration");
         }
         ;
 
-literal_const    : number_const
-                 | string_const
-                 | boolean_const
+
+ /* function declartion part */
+
+define_func  : func_name Lparenthese arg_list Rparenthese func_ret_type
+               SEMICOLON compound_statement KWend IDENT
+             { debug_log("function declaration"); }
         ;
 
-number_const     : OCTAL        { debug_log("integer const"); }
-                 | INTEGER      { debug_log("integer const"); }
-                 | FLOAT        { debug_log("float const"); }
-                 | SCIENTIFIC   { debug_log("float const"); }
-        ;
-
-string_const     : STRING       { debug_log("string const"); }
-        ;
-
-boolean_const    : KWtrue       { debug_log("boolean const"); }
-                 | KWfalse      { debug_log("boolean const"); }
-        ;
-
- /* declaration function part */
-function      : function_start define_function
-        {
-            debug_log("function }");
-            depth--;
-        }
-        ;
-
-define_function : function_name Lparenthese argument_list Rparenthese func_ret_type
-                  SEMICOLON compound_statement KWend IDENT
-                { debug_log("function declaration"); }define_function
-                |
-        ;
-
-function_start : { debug_log("function node {");                        depth++; }
-        ;
-
-function_name : IDENT { debug_log("function name"); }
-        ;
-
-argument_list : argument_start define_argument
-        {
-            debug_log("argument }");                                    depth--;
-        }
-        ;
-
-define_argument : argument SEMICOLON define_argument
-                | argument
-                |
-        ;
-
-argument      : var_list COLON var_type
+define_arg   : var_list COLON var_type
         {
             debug_log("argument declaration");
         }
         ;
 
-argument_start : { debug_log("argument node {");                        depth++; }
-        ;
-
-func_ret_type : COLON scalar_type
-              | { debug_log("no return value"); }
-        ;
 
  /* compound statement part */
-compound_statement : compound_statement_start KWbegin var_and_const_declar statement_list KWend
-        {
-            debug_log("compound statement }");
-            depth--;
-        }
-        ;
 
-compound_statement_start : { debug_log("compound statement node {");    depth++; }
-        ;
-
-statement_list  : statement_start define_statement
-        {
-            debug_log("statement }");
-            depth--;
-        }
-        ;
-
-define_statement : statement_group define_statement
-                 | compound_statement define_statement
-                 |
-        ;
-
-statement_start : { debug_log("statement node {");                      depth++; }
-        ;
-
-statement_group : simp_statement  SEMICOLON
-                | cond_statement
-                | whil_statement
-                | for__statement
-                | ret__statement  SEMICOLON
-                | func_invocation SEMICOLON
+define_state : compound_statement
+             | simp_statement  SEMICOLON
+             | cond_statement
+             | whil_statement
+             | for__statement
+             | ret__statement  SEMICOLON
+             | func_invocation SEMICOLON
         ;
 
 simp_statement  : var_reference ASSIGNMENT expression_node
@@ -234,15 +248,23 @@ simp_statement  : var_reference ASSIGNMENT expression_node
                 { debug_log("simple read"); }
         ;
 
-var_reference   : variable_name reference_list
+var_reference   : var_name
                 { debug_log("variable reference"); }
+                | var_name ref_list
+                { debug_log("array reference"); }
         ;
 
-reference_list  : Lbracket expression_node Rbracket
-                { debug_log("variable reference argument"); }  reference_list
-                |
+func_invocation : func_name Lparenthese expr_list Rparenthese
+        {
+            debug_log("function invocation");
+        }
         ;
 
+ret__statement : KWreturn expression_node { debug_log("return"); }
+        ;
+
+
+ /* Let expression be a node may not necessary */
 
 expression_node : expression_start expression
         {
@@ -253,102 +275,178 @@ expression_node : expression_start expression
 expression_start : { debug_log("expression node {");                    depth++; }
         ;
 
-expression      : expr_order8
-        ;
 
-expr_order8     : expr_order8 TF_OR expr_order7     { debug_log("boolean opt or"); }
-                | expr_order7
-        ;
+ /* statement part node start */
 
-expr_order7     : expr_order7 TF_AND expr_order6    { debug_log("boolean opt and"); }
-                | expr_order6
-        ;
+ /** condition statement
+  *
+  *  this node --> expression node
+  *            --> statement declartion node
+  *
+  *  statement declartion list --- this node 
+  */
 
-expr_order6     : TF_NOT expr_order5                { debug_log("boolean opt not"); }
-                | expr_order5
-        ;
-
-expr_order5     : expr_order4 OP_LT expr_order5     { debug_log("comparsion less"); }
-                | expr_order4 OP_LE expr_order5     { debug_log("comparsion less eq"); }
-                | expr_order4 OP_GT expr_order5     { debug_log("comparsion greater"); }
-                | expr_order4 OP_GE expr_order5     { debug_log("comparsion greater eq"); }
-                | expr_order4 OP_EQ expr_order5     { debug_log("comparsion eq"); }
-                | expr_order4 OP_NE expr_order5     { debug_log("comparsion no eq"); }
-                | expr_order4
-        ;
-
-
-expr_order4     : expr_order4 OP_ADD expr_order3    { debug_log("operator add"); }
-                | expr_order4 OP_DEL expr_order3    { debug_log("operator del"); }
-                | expr_order3
-        ;
-
-expr_order3     : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
-                | expr_order3 OP_DIV expr_order2    { debug_log("operator div"); }
-                | expr_order3 OP_MOD expr_order2    { debug_log("operator mod"); }
-                | expr_order2
-        ;
-
-expr_order2     : OP_DEL expr_order1                { debug_log("operator get negative"); }
-                | expr_order1
-        ;
-
-expr_order1     : Lparenthese expression Rparenthese
-                | func_invocation 
-                | var_reference
-                | literal_const
-        ;
-
-func_invocation : function_name Lparenthese expression_list Rparenthese
-        {
-            debug_log("function invocation");
-        }
-        ;
-
-expression_list : expression_node COMMA expression_list
-                | expression_node
-                |
-        ;
-
-cond_statement : cond_start KWif expression_node KWthen define_statement cond_midd KWelse define_statement KWend KWif
+cond_statement : cond_start KWif expression_node KWthen statement_declar
+                 cond_midd KWelse statement_declar KWend KWif
         {
             debug_log("condition }");
             depth--;
         }
-               | cond_start KWif expression_node KWthen define_statement KWend KWif
+               | cond_start KWif expression_node KWthen statement_declar KWend KWif
         {
             debug_log("condition }");
             depth--;
         }
         ;
 
-cond_start : { debug_log("condition node {");                           depth++; }
+cond_start   : { debug_log("condition node {");                           depth++; }
         ;
 
-cond_midd  : { debug_log("else part"); }
+cond_midd    : { debug_log("else part"); }
         ;
 
-whil_statement : while_start KWwhile expression_node KWdo define_statement KWend KWdo
+
+ /** while statement
+  *
+  *  this node --> expression node
+  *            --> statement declartion node
+  *
+  *  statement declartion list --- this node
+  */
+
+whil_statement : while_start KWwhile expression_node KWdo statement_declar KWend KWdo
         {
             debug_log("while }");
             depth--;
         }
         ;
 
-while_start : { debug_log("while node {");                              depth++; }
+while_start  : { debug_log("while node {");                              depth++; }
         ;
 
-for__statement : _for_start KWfor IDENT ASSIGNMENT number_const KWto number_const KWdo define_statement KWend KWdo
+
+ /** for statement
+  *
+  *  this node --> statement declartion node
+  *
+  *  statement declartion list --- this node
+  */
+
+for__statement : for_start KWfor IDENT ASSIGNMENT number_const KWto
+                 number_const KWdo statement_declar KWend KWdo
         {
             debug_log("for }");
             depth--;
         }
         ;
 
-_for_start : { debug_log("for node {");                                  depth++; }
+for_start    : { debug_log("for node {");                                  depth++; }
         ;
 
-ret__statement : KWreturn expression_node { debug_log("return"); }
+ /* statement part node end */
+
+
+ /** statement declartion
+  *
+  *  this node --- statement list
+  *
+  *  compound statement              -->
+  *  condition statement (then/else) -->
+  *  for statement                   -->
+  *  while statement                 --> this node
+  */
+
+statement_declar : statement_start state_list
+        {
+            debug_log("statement }");
+            depth--;
+        }
+        ;
+
+statement_start : { debug_log("statement declartion node {");           depth++; }
+        ;
+
+
+ /** variable and constant declartion
+  *
+  *  this node --- variable and constant declartion list
+  *
+  *  program            -->
+  *  compound statement --> this node
+  */
+
+var_and_const_declar : vacd_start vacd_list
+        {
+            debug_log("variable declartion  }");
+            depth--;
+        }
+        ;
+
+vacd_start   : { debug_log("variable declartion node {");               depth++; }
+        ;
+
+
+ /** function declartion
+  *
+  *  this node --- function declartion list
+  *
+  *  program   --> this node
+  */
+
+function_declar : dfunc_start dfunc_list
+        {
+            debug_log("function decalartion }");
+            depth--;
+        }
+        ;
+
+dfunc_start  : { debug_log("function decalartion node {");              depth++; }
+        ;
+
+
+ /** compound statement
+  *
+  *  this node --> variable and constant declartion node
+  *            --> statement node
+  *
+  *  program              -->
+  *  function declartion  ---
+  *  statement declartion --- this node
+  */
+
+compound_statement : compound_statement_start KWbegin var_and_const_declar
+                     statement_declar KWend
+        {
+            debug_log("compound statement }");
+            depth--;
+        }
+        ;
+
+compound_statement_start : { debug_log("compound statement node {");    depth++; }
+        ;
+
+
+ /** program (main node)
+  *
+  *  this node --> variable and constant declartion node
+  *            --> function declartion node
+  *            --> compound statement node
+  */
+
+program      : prog_start program_name SEMICOLON program_body KWend IDENT
+        {
+            debug_log("program }");
+            depth--;
+        }
+        ;
+
+prog_start   :         { debug_log("program node {");                  depth++; }
+        ;
+
+program_body : program_body_start var_and_const_declar function_declar compound_statement
+        ;
+
+program_body_start :
         ;
 
 %%
