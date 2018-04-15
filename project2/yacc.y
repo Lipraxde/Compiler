@@ -93,6 +93,7 @@ scalar_type  : KWinteger    { debug_log("integer type"); }
         ;
 
 var_type     : scalar_type
+             | ddim_list scalar_type
         ;
 
 func_ret_type : COLON scalar_type
@@ -104,7 +105,6 @@ func_ret_type : COLON scalar_type
  /* list part */
 
 vacd_list    : define_var   vacd_list
-             | define_array vacd_list
              | define_const vacd_list
              |
         ;
@@ -203,12 +203,6 @@ expr_order1  : Lparenthese expression Rparenthese
 define_var   : KWvar var_list COLON var_type SEMICOLON
         {
             debug_log("variable declaration");
-        }
-        ;
-
-define_array : KWvar var_list COLON ddim_list var_type SEMICOLON
-        {
-            debug_log("array declaration");
         }
         ;
 
