@@ -123,18 +123,24 @@ dfunc_list   : define_func dfunc_list
              |
         ;
 
-arg_list     : define_arg SEMICOLON arg_list
-             | define_arg
+arg_list     : _non_empty_arg_list
              |
+        ;
+
+_non_empty_arg_list : define_arg SEMICOLON _non_empty_arg_list
+                    | define_arg
         ;
 
 state_list   : define_state state_list
              |
         ;
 
-expr_list    : expression_node COMMA expr_list
-             | expression_node
+expr_list    : _non_empty_expr_list
              |
+        ;
+
+_non_empty_expr_list : expression_node COMMA _non_empty_expr_list
+                     | expression_node
         ;
 
 ref_list     : Lbracket expression_node Rbracket ref_list
