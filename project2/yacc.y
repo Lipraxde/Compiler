@@ -6,7 +6,7 @@
                                 if (Opt_P) \
                                 { \
                                     for(int i=0; i<depth; i++) printf("\t"); \
-                                    printf("\033[35m#Parser: \033[33m" fmt "\033[0m\n", ##__VA_ARGS__); \
+                                        printf("\033[35m#Parser: \033[33m" fmt "\033[0m\n", ##__VA_ARGS__); \
                                 } \
                             } while(0)
 
