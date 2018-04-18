@@ -1,0 +1,43 @@
+1: //&T-
+2: test;
+3: begin
+4: 
+5: a[8705] := -9/4*5+9;
+6: b       := a[55/-a];
+7: c       := "123456";
+8: d       := true;
+9: e       := a+b;
+10: 
+11: a       := a+func(a,b,c,d,e);
+12: func(e);
+13: 
+14: if true then
+15: else
+16: end if
+17: 
+18: if a then end if
+19: 
+20: if false then
+21:     if true then
+22:     else
+23:     end if
+24: end if
+25: 
+26: while a+b[d[e]] do
+27: 
+28: if false then end if
+29: 
+30: end do
+31: 
+32: for id := 7 to 87 do
+33: 
+34: end do
+35: 
+36: return ooo+87*a[a[a[a[b]]]];
+37: 
+38: end
+39: end test
+
+|--------------------------------|
+|  There is no syntactic error!  |
+|--------------------------------|

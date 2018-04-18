@@ -3,7 +3,9 @@
  */
 //&T-
 test;
-
+//&P+
+var a: -87;
+//&P-
 var a: integer;		// global variable
 
 foo( a, b: integer ): integer;
@@ -22,6 +24,7 @@ end bar
 begin
 
 	print foo();
-
+//&P+
+a := a----2;
 end
 end test

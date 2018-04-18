@@ -65,8 +65,11 @@ func_name    : IDENT { debug_log("function name"); }
 
  /* constant data part */
 
-number_const : OCTAL        { debug_log("integer const"); }
-             | INTEGER      { debug_log("integer const"); }
+int_const    : OCTAL
+             | INTEGER
+        ;
+
+number_const : int_const    { debug_log("number const"); }
              | FLOAT        { debug_log("float const"); }
              | SCIENTIFIC   { debug_log("float const"); }
         ;
@@ -96,7 +99,7 @@ var_type     : scalar_type
              | ddim_list scalar_type
         ;
 
-func_ret_type : COLON scalar_type
+func_ret_type : COLON var_type /* scalar_type */
               |
               { debug_log("no return value"); }
         ;
@@ -113,9 +116,9 @@ var_list     : var_name COMMA var_list
              | var_name
         ;
 
-ddim_list    : KWarray INTEGER KWto INTEGER KWof ddim_list
+ddim_list    : KWarray int_const KWto int_const KWof ddim_list
              { debug_log("array dimensional"); }
-             | KWarray INTEGER KWto INTEGER KWof
+             | KWarray int_const KWto int_const KWof
              { debug_log("array dimensional"); }
         ;
 
@@ -187,7 +190,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
              | expr_order2
         ;
 
-expr_order2  : OP_DEL expr_order1                { debug_log("operator get negative"); }
+expr_order2  : OP_DEL expr_order2                { debug_log("operator get negative"); }
              | expr_order1
         ;
 
@@ -207,6 +210,10 @@ define_var   : KWvar var_list COLON var_type SEMICOLON
         ;
 
 define_const : KWvar var_list COLON const_group SEMICOLON
+        {
+            debug_log("const declaration");
+        }
+             | KWvar var_list COLON OP_DEL number_const SEMICOLON
         {
             debug_log("const declaration");
         }
