@@ -166,7 +166,7 @@ expr_order7  : expr_order7 TF_AND expr_order6    { debug_log("boolean opt and");
              | expr_order6
         ;
 
-expr_order6  : TF_NOT expr_order5                { debug_log("boolean opt not"); }
+expr_order6  : TF_NOT expr_order6                { debug_log("boolean opt not"); }
              | expr_order5
         ;
 
@@ -339,8 +339,8 @@ while_start  : { debug_log("while node {");                              depth++
   *  statement declartion list --- this node
   */
 
-for__statement : for_start KWfor IDENT ASSIGNMENT number_const KWto
-                 number_const KWdo statement_declar KWend KWdo
+for__statement : for_start KWfor IDENT ASSIGNMENT int_const KWto
+                 int_const KWdo statement_declar KWend KWdo
         {
             debug_log("for }");
             depth--;
