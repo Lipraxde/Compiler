@@ -1,30 +1,34 @@
-/**
- * test.p: simple P language example
- */
 //&T-
-test;
-//&P+
-var a: -87;
 //&P-
-var a: integer;		// global variable
+test;
 
-foo( a, b: integer ): integer;
+// no global declaration(s)
+
+func( a:integer ; b, e:array 1 to 2 of array 2 to 4 of boolean ): boolean;
 begin
-	return a*b;
+	var c: "hello world!";
+	var d: "hello world!";
+	begin
+		var d: real;
+		return (b[1][4] >= 1.0);
+	end
 end
-end foo
+end func
 
-bar(a,b:integer;a:string);
+bar();
 begin
 
 end
 end bar
 
-// main block
 begin
-
-	print foo();
-//&P+
-a := a----2;
+	var a: integer;
+	begin
+		var a, c: boolean; // outer ’a’ has been hidden in this scope
+	end
+	a := a+b*c;
+	a := b*c;
+	func(a+c, b);
 end
 end test
+

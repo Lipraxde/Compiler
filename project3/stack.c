@@ -41,7 +41,7 @@ static int push(struct stack *stack, void *data)
 }
 
 
-static void * pop(struct stack *stack)
+static void *pop(struct stack *stack)
 {
     void *ret = 0;
     struct list *new;
@@ -68,7 +68,7 @@ static void * pop(struct stack *stack)
 static int init_iter(struct stack *stack, int n)
 {
     struct list *target;
-    
+
     stack->_inst->iter_n = n;
 
     if(n >= 0)
@@ -90,7 +90,7 @@ static int init_iter(struct stack *stack, int n)
 }
 
 
-static void * iterator(struct stack *stack)
+static void *iterator(struct stack *stack)
 {
     void *ret;
 
@@ -105,7 +105,7 @@ static void * iterator(struct stack *stack)
 }
 
 
-struct stack * stack_create(void)
+struct stack *stack_create(void)
 {
     struct stack *ret;
     struct list *i1;
@@ -132,7 +132,7 @@ struct stack * stack_create(void)
     ret->_inst->head = i2;
     ret->_inst->tail = i2;
     ret->_inst->count = 0;
-    ret->_inst->now_iter = 0;
+    ret->_inst->now_iter = i2;
     ret->_inst->iter_n = 0;
 
     ret->push = push;
@@ -144,24 +144,21 @@ struct stack * stack_create(void)
 }
 
 
-int stack_delete(struct stack * stack, int (*destoryer)(void *))
+int stack_delete(struct stack * stack, int (*destroyer)(void *))
 {
     int ret = 0;
     void *temp;
-    struct list *i1;
-    struct list *i2;
 
     while(1)
     {
         temp = stack->pop(stack);
         if(temp == 0)
             break;
-        if(destoryer != 0)
-            ret = destoryer(temp);
+        if(destroyer != 0)
+            ret = destroyer(temp);
         if(ret != 0)
             return ret;
     }
-
 
     free(stack->_inst->head->perv);
     free(stack->_inst->head);

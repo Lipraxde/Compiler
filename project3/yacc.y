@@ -1,6 +1,9 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "main.h"
+#include "stack.h"
 #include "symbol.h"
 
 #define debug_log(fmt, ...) do { \
@@ -21,6 +24,7 @@ int depth = 0;
 
 int yylex (void);
 int yyerror( char *msg );
+
 %}
 
 %union {
@@ -40,13 +44,15 @@ int yyerror( char *msg );
 %token KWfor KWinteger KWif KWof KWprint KWread KWreal KWstring
 %token KWthen KWto KWtrue KWreturn KWvar KWwhile
 
-%token <value>  OCTAL;
-%token <value>  INTEGER;
-%token <dvalue> FLOAT;
-%token <dvalue> SCIENTIFIC;
-%token <text>   STRING;
+%token <value>  OCTAL
+%token <value>  INTEGER
+%token <dvalue> FLOAT
+%token <dvalue> SCIENTIFIC
+%token <text>   STRING
+%token <text>   IDENT
 
-%token IDENT
+%type <value>   int_const
+%type <text>    program_name var_name func_name
 
 %start program
 
@@ -54,13 +60,25 @@ int yyerror( char *msg );
 
  /* name part */
 
-program_name : IDENT    { debug_log("program name"); }
+program_name : IDENT
+        {
+            $$ = strdup($1);
+            debug_log("program name");
+        }
         ;
 
-var_name     : IDENT        { debug_log("variable name"); }
+var_name     : IDENT
+        {
+            $$ = strdup($1);
+            debug_log("variable name");
+        }
         ;
 
-func_name    : IDENT { debug_log("function name"); }
+func_name    : IDENT
+        {
+            $$ = strdup($1);
+            debug_log("function name");
+        }
         ;
 
 
@@ -90,40 +108,82 @@ const_group  : number_const
 
  /* type part */
 
-scalar_type  : KWinteger    { debug_log("integer type"); }
-             | KWreal       { debug_log("real type"); }
-             | KWstring     { debug_log("string type"); }
-             | KWboolean    { debug_log("boolean type"); }
+scalar_type  : KWinteger
+        {
+            add_type(type_inte);
+
+            debug_log("integer type");
+        }
+             | KWreal
+        {
+            add_type(type_real);
+
+            debug_log("real type");
+        }
+             | KWstring
+        {
+            add_type(type_stri);
+
+            debug_log("string type");
+        }
+             | KWboolean
+        {
+            add_type(type_bool);
+
+            debug_log("boolean type");
+        }
         ;
 
-var_type     : scalar_type
-             | ddim_list scalar_type
+var_type     :
+             { construct_type(); }
+               scalar_type
+             { supply_type(); }
+             | 
+             { construct_type(); }
+             ddim_list scalar_type
+             { supply_type(); }
         ;
 
 func_ret_type : COLON var_type /* scalar_type */
               |
-              { debug_log("no return value"); }
+        {
+            construct_type();
+            add_type(type_void);
+            supply_type();
+
+            debug_log("no return value");
+        }
         ;
 
 
  /* list part */
 
-vacd_list    : define_var   vacd_list
-             | define_const vacd_list
+vacd_list    : vacd_list define_var
+             | vacd_list define_const
              |
         ;
 
-var_list     : var_name COMMA var_list
+var_list     : var_list COMMA var_name
+             { push_ident($3); }
              | var_name
+             { push_ident($1); }
         ;
 
-ddim_list    : KWarray int_const KWto int_const KWof ddim_list
-             { debug_log("array dimensional"); }
+ddim_list    : ddim_list KWarray int_const KWto int_const KWof
+        {
+            add_dim($5, $3);
+
+            debug_log("array dimensional");
+        }
              | KWarray int_const KWto int_const KWof
-             { debug_log("array dimensional"); }
+        {
+            add_dim($4, $2);
+
+            debug_log("array dimensional");
+        }
         ;
 
-dfunc_list   : define_func dfunc_list
+dfunc_list   : dfunc_list define_func
              |
         ;
 
@@ -131,11 +191,11 @@ arg_list     : _non_empty_arg_list
              |
         ;
 
-_non_empty_arg_list : define_arg SEMICOLON _non_empty_arg_list
+_non_empty_arg_list : _non_empty_arg_list SEMICOLON define_arg
                     | define_arg
         ;
 
-state_list   : define_state state_list
+state_list   : state_list define_state
              |
         ;
 
@@ -143,11 +203,11 @@ expr_list    : _non_empty_expr_list
              |
         ;
 
-_non_empty_expr_list : expression_node COMMA _non_empty_expr_list
+_non_empty_expr_list : _non_empty_expr_list COMMA expression_node
                      | expression_node
         ;
 
-ref_list     : Lbracket expression_node Rbracket ref_list
+ref_list     : ref_list Lbracket expression_node Rbracket
              { debug_log("variable reference argument"); }
              | Lbracket expression_node Rbracket
              { debug_log("variable reference argument"); }
@@ -196,7 +256,7 @@ expr_order2  : OP_DEL expr_order2                { debug_log("operator get negat
         ;
 
 expr_order1  : Lparenthese expression Rparenthese
-             | func_invocation 
+             | func_invocation
              | var_reference
              | const_group
         ;
@@ -206,16 +266,19 @@ expr_order1  : Lparenthese expression Rparenthese
 
 define_var   : KWvar var_list COLON var_type SEMICOLON
         {
+            supply_kind(kind_vari);
             debug_log("variable declaration");
         }
         ;
 
 define_const : KWvar var_list COLON const_group SEMICOLON
         {
+            supply_kind(kind_cons);
             debug_log("const declaration");
         }
              | KWvar var_list COLON OP_DEL number_const SEMICOLON
         {
+            supply_kind(kind_cons);
             debug_log("const declaration");
         }
         ;
@@ -223,13 +286,26 @@ define_const : KWvar var_list COLON const_group SEMICOLON
 
  /* function declartion part */
 
-define_func  : func_name Lparenthese arg_list Rparenthese func_ret_type
-               SEMICOLON compound_statement KWend IDENT
-             { debug_log("function declaration"); }
+define_func  : func_name
+        {
+            push_ident($1);
+            supply_kind(kind_func);
+            next_level();
+        }
+               Lparenthese arg_list Rparenthese func_ret_type SEMICOLON
+               KWbegin var_and_const_declar
+               statement_declar KWend KWend IDENT
+        {
+            dump_symbol();
+            exit_level();
+
+            debug_log("function declaration");
+        }
         ;
 
 define_arg   : var_list COLON var_type
         {
+            supply_kind(kind_para);
             debug_log("argument declaration");
         }
         ;
@@ -291,7 +367,7 @@ expression_start : { debug_log("expression node {");                    depth++;
   *  this node --> expression node
   *            --> statement declartion node
   *
-  *  statement declartion list --- this node 
+  *  statement declartion list --- this node
   */
 
 cond_statement : cond_start KWif expression_node KWthen statement_declar
@@ -425,12 +501,21 @@ dfunc_start  : { debug_log("function decalartion node {");              depth++;
 compound_statement : compound_statement_start KWbegin var_and_const_declar
                      statement_declar KWend
         {
+            dump_symbol();
+            exit_level();
+
             debug_log("compound statement }");
             depth--;
         }
         ;
 
-compound_statement_start : { debug_log("compound statement node {");    depth++; }
+compound_statement_start :
+        {
+            next_level();
+
+            debug_log("compound statement node {");
+            depth++;
+        }
         ;
 
 
@@ -441,14 +526,29 @@ compound_statement_start : { debug_log("compound statement node {");    depth++;
   *            --> compound statement node
   */
 
-program      : prog_start program_name SEMICOLON program_body KWend IDENT
+program      : prog_start program_name
         {
+            push_ident($2);
+            supply_kind(kind_prog);
+            construct_type();
+            add_type(type_void);
+            supply_type();
+        }
+               SEMICOLON program_body KWend IDENT
+        {
+            dump_symbol();
+
             debug_log("program }");
             depth--;
         }
         ;
 
-prog_start   :         { debug_log("program node {");                  depth++; }
+prog_start   :
+        {
+
+            debug_log("program node {");
+            depth++;
+        }
         ;
 
 program_body : program_body_start var_and_const_declar function_declar compound_statement
@@ -467,29 +567,5 @@ int yyerror( char *msg )
     fprintf( stderr, "| Unmatched token: %s\n", yytext );
     fprintf( stderr, "|--------------------------------------------------------------------------\n" );
     exit(-1);
-}
-
-int  main( int argc, char **argv )
-{
-    if( argc != 2 ) {
-        fprintf(  stdout,  "Usage:  ./parser  [filename]\n"  );
-        exit(0);
-    }
-
-    FILE *fp = fopen( argv[1], "r" );
-    
-    if( fp == NULL )  {
-        fprintf( stdout, "Open  file  error\n" );
-        exit(-1);
-    }
-    
-    yyin = fp;
-    yyparse();
-
-    fprintf( stdout, "\n" );
-    fprintf( stdout, "|--------------------------------|\n" );
-    fprintf( stdout, "|  There is no syntactic error!  |\n" );
-    fprintf( stdout, "|--------------------------------|\n" );
-    exit(0);
 }
 

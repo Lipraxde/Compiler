@@ -23,6 +23,7 @@
 int Opt_S = 1;				/* list source code option */
 int Opt_T = 1;				/* list token option */
 int Opt_P = 0;				/* praser debug option */
+int Opt_D = 1;				/* dump symbol table option */
 int linenum = 1;			/* line number */
 char buf[MAX_LINE_LENG];		/* source code line buffer */
 char strContent[MAX_LINE_LENG];		/* string buffer */
@@ -93,11 +94,31 @@ identifier	({letter})({letter}|{digit})*
 "var"			{ token(KWvar);		return KWvar; }
 "while"			{ token(KWwhile);	return KWwhile; }
 
-{identifier}	{ tokenString("id",yytext);					return IDENT; }
-{octal}			{ tokenOctInteger("oct_integer",yytext);	return OCTAL; }
-{integer}		{ tokenInteger("integer",atoi(yytext));		return INTEGER; }
-{float}			{ tokenFloat("float",yytext);				return FLOAT; }
-{scientific}	{ tokenScientific("scientific", yytext);	return SCIENTIFIC; }
+{identifier}	{
+                    yylval.text = yytext;
+                    tokenString("id",yytext);
+                    return IDENT;
+                }
+{octal}			{
+                    yylval.value = strtol(yytext,'\0',8);
+                    tokenOctInteger("oct_integer",yytext);
+                    return OCTAL;
+                }
+{integer}		{
+                    yylval.value = atoi(yytext);
+                    tokenInteger("integer",atoi(yytext));	
+                    return INTEGER;
+                }
+{float}			{
+                    yylval.dvalue = atof(yytext);
+                    tokenFloat("float",yytext);
+                    return FLOAT;
+                }
+{scientific}	{
+                    yylval.dvalue = atof(yytext);
+                    tokenScientific("scientific", yytext);
+                    return SCIENTIFIC;
+                }
 
 \"((\"\")|[^\"\n])*\"	{
 				LIST;
@@ -203,6 +224,12 @@ void setPseudoComment( const char *text )
 			Opt_P = 1;
 		else if( text[4] == '-' )
 			Opt_P = 0;
+	 	break;
+	case 'D':
+		if( text[4] == '+' )
+			Opt_D = 1;
+		else if( text[4] == '-' )
+			Opt_D = 0;
 	 	break;
 	default:
 	 	break;
