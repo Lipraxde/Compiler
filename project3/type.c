@@ -12,7 +12,6 @@ const char *type_inte = "integer";
 const char *type_real = "real";
 const char *type_bool = "boolean";
 const char *type_stri = "string";
-const char *type_sign = "signature";
 
 struct dim_element
 {
@@ -63,14 +62,17 @@ static const char * get_type(struct type *type)
     ts = type->_inst->type_s;
     dis = type->_inst->string;
 
-    if(size>0)
+    if(type->_inst->type == 0)
+        return 0;
+
+    if(size > 0)
         snprintf(dis, size, "%s%n", type->_inst->type, &c);
     size = size - c;
     dis = dis+c;
 
     ts->init_iter(ts, 0);
     de = ts->iterator(ts);
-    if(size>0)
+    if(size > 0)
     {
         snprintf(dis, size, " ");
         size--;
@@ -80,10 +82,10 @@ static const char * get_type(struct type *type)
     for(; (size>0)&&(de!=0); de=ts->iterator(ts))
     {
         snprintf(dis, size, "[%d]%n", de->upper-de->lower+1, &c);
-        size = size - c;
+        size = size-c;
         dis = dis+c;
     }
-    
+
     return type->_inst->string;
 }
 

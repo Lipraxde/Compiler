@@ -122,23 +122,24 @@ identifier	({letter})({letter}|{digit})*
 
 \"((\"\")|[^\"\n])*\"	{
 				LIST;
-				if (Opt_T){
-					size_t wrt_idx = 0;
-					size_t rd_idx = 1;
-					int quote = 0;
-					while( yytext[rd_idx] ){
-						if( yytext[rd_idx] == '\"' ){
-							if( quote )
-								strContent[wrt_idx++] = '\"';
-							quote = ~quote;
-						}
-						else
-							strContent[wrt_idx++] = yytext[rd_idx];
-						rd_idx++;
+				size_t wrt_idx = 0;
+				size_t rd_idx = 1;
+				int quote = 0;
+				while( yytext[rd_idx] ){
+					if( yytext[rd_idx] == '\"' ){
+						if( quote )
+							strContent[wrt_idx++] = '\"';
+						quote = ~quote;
 					}
-					strContent[wrt_idx] = '\0';
+					else
+						strContent[wrt_idx++] = yytext[rd_idx];
+					rd_idx++;
+				}
+				strContent[wrt_idx] = '\0';
+				if (Opt_T){
 					printf("<%s: %s>\n", "string", strContent);
 				}
+                                yylval.text = strContent;
 				return STRING;
 			}
 

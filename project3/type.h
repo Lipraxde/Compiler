@@ -6,7 +6,6 @@ const char *type_inte;
 const char *type_real;
 const char *type_bool;
 const char *type_stri;
-const char *type_sign;
 
 struct type_instance;
 

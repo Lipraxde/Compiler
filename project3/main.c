@@ -6,7 +6,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "main.h"
 #include "stack.h"
+#include "string.h"
 #include "symbol.h"
 
 extern int yyparse();	/* declared by yacc */
@@ -15,6 +17,7 @@ extern int Opt_D;
 
 struct stack *s;
 struct type *t;
+struct attr *a;
 int now_level = 0;
 
 static void print_symbol(struct symbol *symbol)
@@ -24,7 +27,7 @@ static void print_symbol(struct symbol *symbol)
     const char *kind;
     const char *type;
     const char *attr;
-    static const char invalid[] = "invalid";
+    static const char invalid[] = "";
 
     level = symbol->get_level(symbol);
     name = symbol->get_name(symbol);
@@ -70,6 +73,92 @@ int supply_kind(const char *kind)
 }
 
 
+int construct_attr(void)
+{
+    a = attr_create();
+
+    return 0;
+}
+
+
+static int add_attr(void *target, int type)
+{
+    if(a != 0)
+        a->add_attr(a, target, type);
+
+    return 0;
+}
+
+
+int add_cons_attr(void *target, const char *type, int is_negative)
+{
+    void *temp = 0;
+    int at = 0;
+
+    if(type == type_inte)
+    {
+        temp = malloc(sizeof(int));
+        *(int *)temp = *(int *)target;
+        if(is_negative)
+            *(int *)temp = -*(int *)temp;
+        at = attr_inte;
+    }
+    else if(type == type_real)
+    {
+        temp = malloc(sizeof(double));
+        *(double *)temp = *(double *)target;
+        if(is_negative)
+            *(double *)temp = -*(double *)temp;
+        at = attr_real;
+    }
+    else if(type == type_stri)
+    {
+        unsigned long len = strlen(target);
+        temp = malloc(len+1);
+        strcpy(temp, *(const char **)target);
+        at = attr_stri;
+    }
+    else if(type == type_bool)
+    {
+        temp = malloc(sizeof(int));
+        *(int *)temp = *(int *)target;
+        at = attr_bool;
+    }
+
+    add_attr(temp, at);
+
+    return 0;
+}
+
+int supply_cons_attr(void)
+{
+    struct symbol *temp;
+
+    s->init_iter(s, -1);
+    for(temp=s->iterator(s);
+        (temp!=0)&&(temp->get_attr(temp)==0)&&(temp->get_kind(temp)==kind_cons);
+        temp=s->iterator(s))
+        temp->set_attr(temp, a);
+    a = 0;
+
+    return 0;
+}
+
+
+int supply_func_attr(void)
+{
+    struct symbol *temp;
+
+    s->init_iter(s, -1);
+    for(temp=s->iterator(s); (temp!=0)&&(temp->get_kind(temp)!=kind_func); temp=s->iterator(s));
+    if(temp != 0)
+        temp->set_attr(temp, a);
+    a = 0;
+
+    return 0;
+}
+
+
 int construct_type(void)
 {
     t = type_create();
@@ -80,7 +169,8 @@ int construct_type(void)
 
 int add_type(const char *str)
 {
-    t->add_type(t, str);
+    if(t != 0)
+        t->add_type(t, str);
 
     return 0;
 }
@@ -88,7 +178,8 @@ int add_type(const char *str)
 
 int add_dim(int upper, int lower)
 {
-    t->add_dime(t, upper, lower);
+    if(t != 0)
+        t->add_dime(t, upper, lower);
 
     return 0;
 }
@@ -97,18 +188,27 @@ int add_dim(int upper, int lower)
 int supply_type(void)
 {
     struct symbol *temp;
+    const char *supply_kind;
 
     s->init_iter(s, -1);
-    for(temp=s->iterator(s); (temp!=0)&&(temp->get_type(temp)==0); temp=s->iterator(s))
+    for(temp=s->iterator(s); (temp!=0)&&(temp->get_type(temp)!=0); temp=s->iterator(s));
+    supply_kind = temp->get_kind(temp);
+    for(; (temp!=0)&&(temp->get_type(temp)==0)&&(temp->get_kind(temp)==supply_kind);
+        temp=s->iterator(s))
+    {
         temp->set_type(temp, t);
+        if(temp->get_kind(temp) == kind_para)
+            add_attr(t, attr_type);
+    }
     t = 0;
 
     return 0;
 }
 
+
 int next_level(void)
 {
-    if(now_level<INT_MAX)
+    if(now_level < INT_MAX)
         now_level++;
 
     return 0;
@@ -117,7 +217,7 @@ int next_level(void)
 
 int exit_level(void)
 {
-    if(now_level>0)
+    if(now_level > 0)
         now_level--;
 
     return 0;
@@ -170,6 +270,7 @@ int  main( int argc, char **argv )
 
     yyparse();
 
+    /* FIXME Should release attribute and type information. */
     stack_delete(s, symbol_delete);
 
     fprintf( stdout, "\n" );

@@ -31,6 +31,14 @@ int yyerror( char *msg );
     int    value;
     double dvalue;
     char*  text;
+    struct {
+        union {
+            int value;
+            double dvalue;
+            const char *text;
+        };
+        const char *method;
+    } const_type;
 }
 
 %token COMMA SEMICOLON COLON Lparenthese Rparenthese Lbracket Rbracket
@@ -53,6 +61,8 @@ int yyerror( char *msg );
 
 %type <value>   int_const
 %type <text>    program_name var_name func_name
+
+%type <const_type> const_group number_const string_const bool_const
 
 %start program
 
@@ -85,24 +95,35 @@ func_name    : IDENT
  /* constant data part */
 
 int_const    : OCTAL
+             { $$ = $1; }
              | INTEGER
+             { $$ = $1; }
         ;
 
-number_const : int_const    { debug_log("number const"); }
-             | FLOAT        { debug_log("float const"); }
-             | SCIENTIFIC   { debug_log("float const"); }
+number_const : int_const
+             { $$.method = type_inte; $$.value = $1;  debug_log("number const"); }
+             | FLOAT
+             { $$.method = type_real; $$.dvalue = $1; debug_log("float const"); }
+             | SCIENTIFIC
+             { $$.method = type_real; $$.dvalue = $1; debug_log("float const"); }
         ;
 
-string_const : STRING       { debug_log("string const"); }
+string_const : STRING
+             { $$.method = type_stri; $$.text = $1; debug_log("string const"); }
         ;
 
-bool_const   : KWtrue       { debug_log("boolean const"); }
-             | KWfalse      { debug_log("boolean const"); }
+bool_const   : KWtrue
+             { $$.method = type_bool; $$.value = 1; debug_log("boolean const"); }
+             | KWfalse
+             { $$.method = type_bool; $$.value = 0; debug_log("boolean const"); }
         ;
 
 const_group  : number_const
+             { $$ = $1; }
              | string_const
+             { $$ = $1; }
              | bool_const
+             { $$ = $1; }
         ;
 
 
@@ -266,7 +287,7 @@ expr_order1  : Lparenthese expression Rparenthese
 
 define_var   : KWvar var_list COLON var_type SEMICOLON
         {
-            supply_kind(kind_vari);
+            supply_kind(kind_vari); /* Can not early, is variable or constant? */
             debug_log("variable declaration");
         }
         ;
@@ -274,11 +295,23 @@ define_var   : KWvar var_list COLON var_type SEMICOLON
 define_const : KWvar var_list COLON const_group SEMICOLON
         {
             supply_kind(kind_cons);
+            construct_type();
+            add_type($4.method);
+            supply_type();
+            construct_attr();
+            add_cons_attr(&($4.value), $4.method, 0);
+            supply_cons_attr();
             debug_log("const declaration");
         }
              | KWvar var_list COLON OP_DEL number_const SEMICOLON
         {
             supply_kind(kind_cons);
+            construct_type();
+            add_type($5.method);
+            supply_type();
+            construct_attr();
+            add_cons_attr(&($5.value), $5.method, 1);
+            supply_cons_attr();
             debug_log("const declaration");
         }
         ;
@@ -290,9 +323,14 @@ define_func  : func_name
         {
             push_ident($1);
             supply_kind(kind_func);
+            construct_attr();
             next_level();
         }
-               Lparenthese arg_list Rparenthese func_ret_type SEMICOLON
+               Lparenthese arg_list Rparenthese
+        {
+            supply_func_attr();
+        }
+               func_ret_type SEMICOLON
                KWbegin var_and_const_declar
                statement_declar KWend KWend IDENT
         {
@@ -303,11 +341,10 @@ define_func  : func_name
         }
         ;
 
-define_arg   : var_list COLON var_type
-        {
-            supply_kind(kind_para);
-            debug_log("argument declaration");
-        }
+define_arg   : var_list
+             { supply_kind(kind_para); /* Must supply parameter kind ASAP. */ }
+               COLON var_type
+             { debug_log("argument declaration"); }
         ;
 
 

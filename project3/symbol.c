@@ -17,7 +17,7 @@ struct symbol_instance
     int level;
     const char *kind;
     struct type *type;
-    const char *attr;
+    struct attr *attr;
 };
 
 
@@ -90,7 +90,7 @@ static const char * get_type(struct symbol *symbol)
 }
 
 
-static int set_attr(struct symbol *symbol, const char *attr)
+static int set_attr(struct symbol *symbol, struct attr *attr)
 {
     symbol->_inst->attr = attr;
 
@@ -100,7 +100,15 @@ static int set_attr(struct symbol *symbol, const char *attr)
 
 static const char * get_attr(struct symbol *symbol)
 {
-    return symbol->_inst->attr;
+    struct attr *attr;
+    const char *ret = 0;
+
+    attr = symbol->_inst->attr;
+
+    if(attr != 0)
+        ret = attr->get_attr(attr);
+
+    return ret;
 }
 
 

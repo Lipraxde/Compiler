@@ -4,9 +4,9 @@ test;
 
 // no global declaration(s)
 
-func( a:integer ; b, e:array 1 to 2 of array 2 to 4 of boolean ): boolean;
+func( a:integer ; b:array 1 to 2 of array 2 to 4 of boolean ): boolean;
 begin
-	var c: "hello world!";
+	var y, c: 12E-3;
 	var d: "hello world!";
 	begin
 		var d: real;
@@ -15,7 +15,7 @@ begin
 end
 end func
 
-bar();
+bar( a:real);
 begin
 
 end

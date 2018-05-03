@@ -1,6 +1,7 @@
 #ifndef __SYMBOL_H__
 #define __SYMBOL_H__
 
+#include "attribute.h"
 #include "type.h"
 
 const char *kind_prog;
@@ -22,7 +23,7 @@ struct symbol
     const char *    (*get_kind)(struct symbol *self);
     int             (*set_type)(struct symbol *self, struct type *type);
     const char *    (*get_type)(struct symbol *self);
-    int             (*set_attr)(struct symbol *self, const char *attr);
+    int             (*set_attr)(struct symbol *self, struct attr *attr);
     const char *    (*get_attr)(struct symbol *self);
 };
 
