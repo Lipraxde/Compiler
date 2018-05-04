@@ -332,13 +332,14 @@ define_func  : func_name
         }
                func_ret_type SEMICOLON
                KWbegin var_and_const_declar
-               statement_declar KWend KWend IDENT
+               statement_declar KWend
         {
             dump_symbol();
             exit_level();
 
             debug_log("function declaration");
         }
+               KWend IDENT
         ;
 
 define_arg   : var_list
