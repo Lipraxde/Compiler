@@ -70,19 +70,52 @@ int stack_delete(struct stack *self, int (*destroyer)(void *));
 
 使用stack_create()來取得stack object，裡面具有push、pop、init_iter、iterator四個基本功能。
 
-所使用的
-
 iterator用來依序輸出stack裡的資料，使用前要呼叫init_iter來初始化iterator，傳入-1表示從尾到頭，0表示從頭到尾，n、-n表示先忽略n筆資料。
 
-stack_delete()用來釋放
+stack_delete()用來釋放。
 
-###### TODO: 應該將destoryer()放在\_inst裡面，由註冊的方式來提供，不過由於並沒有要完整的模擬物件導向語言的寫法，所以其實不太需要特意使用這種方式。
+###### TODO: 應該將destoryer()放在\_inst裡面，由註冊的方式來提供，不過由於並沒有要完整的模擬物件導向語言的寫法，所以其實不太需要特意使用這種方式，將來如果想更進一步OO化的話再想想辦法，可能就先弄一個一般化的struct {\_inst; destoryer}吧。
 
+type.c type.h
+----------------------------------------
+
+```c
+const char *type_void;
+const char *type_inte;
+const char *type_real;
+const char *type_bool;
+const char *type_stri;
+
+struct type_instance;
+
+struct type
+{
+    struct type_instance *_inst;
+    int             (*add_type)(struct type *self, const char *type);
+    int             (*add_dime)(struct type *self, int upper, int lower);
+    const char *    (*get_type)(struct type *self);
+};
+
+struct type * type_create(void);
+int type_delete(void *self);
+```
+
+使用type_create()來取得type object，裡面具有add_type、add_dime、get_type三個基本功能。
+
+add_type可以用來幫這個type物件添加這是void、integer、real、boolean、string的資訊。
+
+add_dime的內部管理一個stack，將這個dimension的upper、lower值傳入並管理。
+
+get_type會輸出一段字串，代表目前這個type的文字，須注意程式並沒有確認這個type是否應該具有dimension。(譬如說void [n])
+
+type_delete()用來釋放。
+
+###### TODO: 由於在可能要提供更強的type功能，譬如說定位出var\[123\]的位置，可能需要提供更強的功能。
 
 ----------------------------------------
 
 
-TODO Memory管理問題
+TODO: Memory管理問題
 ----------------------------------------
 
 原則上應該要保持自己malloc的自己釋放，唯獨stack目前較為特殊，可以傳入一個destroyer來釋放void \*指到的記憶體，因當初想的時候不夠健全。
