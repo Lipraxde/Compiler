@@ -24,3 +24,4 @@ struct attr * attr_create(void);
 int attr_delete(void *self);
 
 #endif /* __ATTRIBUTE_H__ */
+

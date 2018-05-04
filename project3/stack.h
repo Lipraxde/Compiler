@@ -16,3 +16,4 @@ struct stack *stack_create(void);
 int stack_delete(struct stack *self, int (*destroyer)(void *));
 
 #endif /* __STACK_H__ */
+

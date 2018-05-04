@@ -31,3 +31,4 @@ int check_redeclared(struct stack *s, const char *ident)
 
     return 0;
 }
+
