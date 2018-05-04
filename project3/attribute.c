@@ -1,6 +1,7 @@
- #include <assert.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "attribute.h"
 #include "stack.h"
 #include "type.h"

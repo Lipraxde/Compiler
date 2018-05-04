@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <stdlib.h>
+
 #include "symbol.h"
+#include "attribute.h"
 #include "type.h"
 
 #define NAME_LEN 33

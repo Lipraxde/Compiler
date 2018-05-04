@@ -6,7 +6,7 @@ test;
 
 func( a:integer ; b:array 1 to 2 of array 2 to 4 of boolean ): boolean;
 begin
-	var y, c: 12E-3;
+	var a, c: 12E-3;
 	var d: "hello world!";
 	begin
 		var d: real;
@@ -21,10 +21,15 @@ begin
 end
 end bar
 
+bar(a:integer);
+begin
+end
+end bar
+
 begin
 	var a: integer;
 	begin
-		var a, c: boolean; // outer ’a’ has been hidden in this scope
+		var a, b: boolean; // outer ’a’ has been hidden in this scope
 	end
 	a := a+b*c;
 	a := b*c;

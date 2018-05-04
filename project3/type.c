@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "stack.h"
+
 #include "type.h"
+#include "stack.h"
 
 #define STRING_LEN 256
 

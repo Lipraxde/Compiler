@@ -6,7 +6,10 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "main.h"
+#include "attribute.h"
+#include "err_check.h"
 #include "stack.h"
 #include "string.h"
 #include "symbol.h"
@@ -52,10 +55,14 @@ int push_ident(const char *name)
 {
     struct symbol *now;
 
-    now = symbol_create();
-    now->set_level(now, now_level);
-    now->set_name(now, name);
-    s->push(s, now);
+    check_redeclared(s, name);
+    // if(check_redeclared(s, name) == 0)
+    {
+        now = symbol_create();
+        now->set_level(now, now_level);
+        now->set_name(now, name);
+        s->push(s, now);
+    }
 
     return 0;
 }
