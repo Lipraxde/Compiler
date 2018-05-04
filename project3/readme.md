@@ -49,6 +49,8 @@ yacc.y
 
 在parser要提供任意資訊給stack裡的symbol前，都要先呼叫相應的construct。(symbol在使用push_ident()時自動產生，目前只有attribute、type兩種construct)
 
+###### 有些地方使用strdup()這種複製的手段，是因為從lex傳上來的yytext再讀到下一個token時會添加進多的字元。
+
 stack.c stack.h
 ----------------------------------------
 
@@ -147,8 +149,69 @@ attr_delete()用來釋放。
 
 ###### TODO: 實際上應該是由add_attr的時候從target裡面找出將其輸出成文字的function的，不過並沒有要完全像OO一樣，所以沒這樣做
 
-main symbol先去上課，晚點弄這兩段
+symbol.c symbol.h
 ----------------------------------------
+
+```c
+const char *kind_prog;
+const char *kind_func;
+const char *kind_para;
+const char *kind_vari;
+const char *kind_forv;
+const char *kind_cons;
+
+struct symbol_instance;
+
+struct symbol
+{
+    struct symbol_instance *_inst;
+    int             (*set_name)(struct symbol *self, const char *name); // Max length = 32
+    const char *    (*get_name)(struct symbol *self);
+    int             (*set_level)(struct symbol *self, int n);
+    int             (*get_level)(struct symbol *self);
+    int             (*set_kind)(struct symbol *self, const char *kind);
+    const char *    (*get_kind)(struct symbol *self);
+    int             (*set_type)(struct symbol *self, struct type *type);
+    const char *    (*get_type)(struct symbol *self);
+    int             (*set_attr)(struct symbol *self, struct attr *attr);
+    const char *    (*get_attr)(struct symbol *self);
+};
+
+struct symbol * symbol_create(void);
+int symbol_delete(void *self);
+```
+
+使用symbol_create()來取得symbol object，有如一系set、get基本功能：
+
+set_name較為特殊，會採用複製的方式，理論上不用複製的也行，只是為了限制identifier可識別長度32，方便處理而使用的。
+
+symbol_delete()用來釋放。
+
+main.c main.h
+----------------------------------------
+
+```c
+int push_ident(const char *name);
+int supply_kind(const char *kind);
+
+int construct_attr(void);
+int add_cons_attr(void *target, const char *type, int is_negative);
+int supply_cons_attr(void);
+int supply_func_attr(void); /* Add parameter attribute to function in add_type. */
+
+int construct_type(void);
+int add_type(const char *str);
+int add_dim(int upper, int lower);
+int supply_type(void);
+
+int next_level(void);
+int exit_level(void);
+void dump_symbol(void);
+```
+
+主程式所在位置，提供function給yacc呼叫，內部維護一個symbol table的stack。
+
+function的argument attribute會在supply_type的時候自動蒐集，不用另外呼叫方法。(依symbol的kind是不是parameter來決定)
 
 TODO: Memory管理問題、OO化
 ----------------------------------------
@@ -163,7 +226,7 @@ TODO: Memory管理問題、OO化
 
 由於parser並沒有要成為一個常駐程式，過程中有些memory leak無傷大雅。
 
-要OO化的話最終就是建立一個general object，裡面提供相應的_inst、to_string、destoryer等等，然後依不同物件提供不同的create方式與它自己的struct宣告，使用時配合轉型使用。
+要OO化的話最終就是建立一個general object，裡面提供相應的_inst、to_string、destoryer等等，然後依不同物件提供不同的create方式與它自己的struct宣告，使用時配合轉型使用。不過目前這樣也算是堪用了。
 
 parser
 ----------------------------------------
