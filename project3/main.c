@@ -246,13 +246,27 @@ void dump_symbol(void)
             printf("-");
         printf("\n");
 
+        struct stack *stemp;    // for inverse output order
+        stemp = stack_create();
         for(temp=s->pop(s); (temp!=0)&&(temp->get_level(temp)==now_level); temp=s->pop(s))
-            print_symbol(temp);
+            stemp->push(stemp, temp);
         s->push(s, temp);
 
+        for(temp=stemp->pop(stemp); (temp!=0); temp=stemp->pop(stemp))
+        {
+            print_symbol(temp);
+            symbol_delete(temp);
+        }
+        stack_delete(stemp, 0);
+
         for(i=0;i< 110;i++)
-            printf("=");
+            printf("-");
         printf("\n");
+    }
+    else
+    {   // Pop symbol
+        for(temp=s->pop(s); (temp!=0)&&(temp->get_level(temp)==now_level); temp=s->pop(s));
+        s->push(s, temp);
     }
 }
 
@@ -280,10 +294,13 @@ int  main( int argc, char **argv )
     /* FIXME Should release attribute and type information. */
     stack_delete(s, symbol_delete);
 
+/*
     fprintf( stdout, "\n" );
     fprintf( stdout, "|--------------------------------|\n" );
     fprintf( stdout, "|  There is no syntactic error!  |\n" );
     fprintf( stdout, "|--------------------------------|\n" );
+*/
+
     exit(0);
 }
 

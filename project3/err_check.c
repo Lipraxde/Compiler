@@ -23,8 +23,8 @@ int check_redeclared(struct stack *s, const char *ident)
     {
         if(strcmp(ident, b->get_name(b)) == 0)
         {
-            printf("<Error> found in Line %d: ", linenum);
-            printf(err_redeclared, ident);
+            fprintf(stdout, "<Error> found in Line %d: ", linenum);
+            fprintf(stdout, err_redeclared, ident);
             return 1;
         }
     }
