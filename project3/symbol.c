@@ -1,11 +1,10 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "symbol.h"
 #include "attribute.h"
 #include "type.h"
-
-#define NAME_LEN 33
 
 const char *kind_prog = "program";
 const char *kind_func = "function";
@@ -16,7 +15,7 @@ const char *kind_cons = "constant";
 
 struct symbol_instance
 {
-    char name[NAME_LEN];
+    char name[IDENT_EFFECTIVE_LEN+1];
     int level;
     const char *kind;
     struct type *type;
@@ -26,12 +25,7 @@ struct symbol_instance
 
 static int set_name(struct symbol *symbol, const char *name)
 {
-    int i;
-    const char *p = name;
-
-    for(i=0; (i<NAME_LEN-1)&&(*p!=0); i++)
-        symbol->_inst->name[i] = *p++;
-    symbol->_inst->name[i] = 0;
+    strncpy(symbol->_inst->name, name, IDENT_EFFECTIVE_LEN);
 
     return 0;
 }

@@ -4,6 +4,8 @@
 #include "attribute.h"
 #include "type.h"
 
+#define IDENT_EFFECTIVE_LEN 32
+
 const char *kind_prog;
 const char *kind_func;
 const char *kind_para;

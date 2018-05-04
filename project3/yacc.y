@@ -72,21 +72,21 @@ int yyerror( char *msg );
 
 program_name : IDENT
         {
-            $$ = strdup($1);
+            $$ = strndup($1, IDENT_EFFECTIVE_LEN);
             debug_log("program name");
         }
         ;
 
 var_name     : IDENT
         {
-            $$ = strdup($1);
+            $$ = strndup($1, IDENT_EFFECTIVE_LEN);
             debug_log("variable name");
         }
         ;
 
 func_name    : IDENT
         {
-            $$ = strdup($1);
+            $$ = strndup($1, IDENT_EFFECTIVE_LEN);
             debug_log("function name");
         }
         ;
