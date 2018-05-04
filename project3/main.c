@@ -46,7 +46,8 @@ static void print_symbol(struct symbol *symbol)
     printf("%-11s", kind);
     printf("%d%-10s", level, (level==0) ? "(global)":"(local)");
     printf("%-17s", type);
-    printf("%-11s", attr);
+    printf("%-s", attr);    // Because want to match output example.
+    // printf("%-11s", attr);
     printf("\n");
 }
 

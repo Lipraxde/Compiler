@@ -12,7 +12,7 @@
 extern int linenum;             /* declared in lex.l */
 extern int now_level;           /* declared in main.c */
 
-const char *err_redeclared = "symbol ’%s’ is redeclared\n";
+const char *err_redeclared = "symbol '%s' is redeclared\n";
 
 int check_redeclared(struct stack *s, const char *ident)
 {
