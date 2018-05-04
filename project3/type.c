@@ -73,7 +73,7 @@ static const char * get_type(struct type *type)
 
     ts->init_iter(ts, 0);
     de = ts->iterator(ts);
-    if(size > 0)
+    if((size>0)&&(de!=0))
     {
         snprintf(dis, size, " ");
         size--;
