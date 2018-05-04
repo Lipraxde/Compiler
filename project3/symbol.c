@@ -9,6 +9,7 @@ const char *kind_prog = "program";
 const char *kind_func = "function";
 const char *kind_para = "parameter";
 const char *kind_vari = "variable";
+const char *kind_forv = "loop_var";
 const char *kind_cons = "constant";
 
 struct symbol_instance
@@ -106,7 +107,13 @@ static const char * get_attr(struct symbol *symbol)
     attr = symbol->_inst->attr;
 
     if(attr != 0)
-        ret = attr->get_attr(attr);
+    {
+        const char *k = symbol->get_kind(symbol);
+        if(k==kind_func)
+            ret = attr->get_attr(attr, attr_field_arg);
+        else if(k==kind_cons)
+            ret = attr->get_attr(attr, attr_field_val);
+    }
 
     return ret;
 }

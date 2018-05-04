@@ -453,9 +453,20 @@ while_start  : { debug_log("while node {");                              depth++
   *  statement declartion list --- this node
   */
 
-for__statement : for_start KWfor IDENT ASSIGNMENT int_const KWto
-                 int_const KWdo statement_declar KWend KWdo
+for__statement : for_start KWfor var_name ASSIGNMENT int_const KWto int_const KWdo
         {
+            next_level();
+            push_ident($3);
+            supply_kind(kind_forv);
+            construct_type();
+            add_type(type_inte);
+            supply_type();
+        }
+                 statement_declar KWend KWdo
+        {
+            dump_symbol();
+            exit_level();
+
             debug_log("for }");
             depth--;
         }

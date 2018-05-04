@@ -39,7 +39,7 @@ static int add_attr(struct attr *attr, void *target, int type)
 }
 
 
-static const char * get_attr(struct attr *attr)
+static const char * get_attr(struct attr *attr, int field)
 {
     struct stack *as;
     char *dis;
@@ -54,24 +54,24 @@ static const char * get_attr(struct attr *attr)
     for(ae=as->iterator(as); (size>0)&&(ae!=0); ae=as->iterator(as))
     {
         c = 0;
-        if(ae->type == attr_type)
+        if((ae->type==attr_type)&&(field&attr_field_arg))
         {
             struct type *te = ae->target;
             snprintf(dis, size, "%s, %n", te->get_type(te), &c);
         }
-        else if(ae->type == attr_inte)
+        else if((ae->type==attr_inte)&&(field&attr_field_val))
         {
             snprintf(dis, size, "%d, %n", *(int *)ae->target, &c);
         }
-        else if(ae->type == attr_real)
+        else if((ae->type==attr_real)&&(field&attr_field_val))
         {
             snprintf(dis, size, "%lf, %n", *(double *)ae->target, &c);
         }
-        else if(ae->type == attr_stri)
+        else if((ae->type==attr_stri)&&(field&attr_field_val))
         {
             snprintf(dis, size, "\"%s\", %n", (const char *)ae->target, &c);
         }
-        else if(ae->type == attr_bool)
+        else if((ae->type==attr_bool)&&(field&attr_field_val))
         {
             snprintf(dis, size, "%s, %n", (*(int *)ae->target==1) ? "true":"false", &c);
         }

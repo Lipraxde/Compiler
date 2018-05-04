@@ -29,6 +29,9 @@ begin
 	a := a+b*c;
 	a := b*c;
 	func(a+c, b);
+    for dd := 1 to 87 do
+        print a;
+    end do
 end
 end test
 

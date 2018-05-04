@@ -8,6 +8,7 @@ const char *kind_prog;
 const char *kind_func;
 const char *kind_para;
 const char *kind_vari;
+const char *kind_forv;
 const char *kind_cons;
 
 struct symbol_instance;
