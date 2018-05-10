@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-#include "stack.h"
-#include "symbol.h"
 
 #define debug_log(fmt, ...) do { \
                                 if (Opt_P) \
@@ -72,21 +70,18 @@ int yyerror( char *msg );
 
 program_name : IDENT
         {
-            $$ = strndup($1, IDENT_EFFECTIVE_LEN);
             debug_log("program name");
         }
         ;
 
 var_name     : IDENT
         {
-            $$ = strndup($1, IDENT_EFFECTIVE_LEN);
             debug_log("variable name");
         }
         ;
 
 func_name    : IDENT
         {
-            $$ = strndup($1, IDENT_EFFECTIVE_LEN);
             debug_log("function name");
         }
         ;
@@ -101,21 +96,21 @@ int_const    : OCTAL
         ;
 
 number_const : int_const
-             { $$.method = type_inte; $$.value = $1;  debug_log("number const"); }
+             { debug_log("number const"); }
              | FLOAT
-             { $$.method = type_real; $$.dvalue = $1; debug_log("float const"); }
+             { debug_log("float const"); }
              | SCIENTIFIC
-             { $$.method = type_real; $$.dvalue = $1; debug_log("float const"); }
+             { debug_log("float const"); }
         ;
 
 string_const : STRING
-             { $$.method = type_stri; $$.text = $1; debug_log("string const"); }
+             { debug_log("string const"); }
         ;
 
 bool_const   : KWtrue
-             { $$.method = type_bool; $$.value = 1; debug_log("boolean const"); }
+             { debug_log("boolean const"); }
              | KWfalse
-             { $$.method = type_bool; $$.value = 0; debug_log("boolean const"); }
+             { debug_log("boolean const"); }
         ;
 
 const_group  : number_const
@@ -131,47 +126,35 @@ const_group  : number_const
 
 scalar_type  : KWinteger
         {
-            add_type(type_inte);
-
             debug_log("integer type");
         }
              | KWreal
         {
-            add_type(type_real);
-
             debug_log("real type");
         }
              | KWstring
         {
-            add_type(type_stri);
-
             debug_log("string type");
         }
              | KWboolean
         {
-            add_type(type_bool);
-
             debug_log("boolean type");
         }
         ;
 
 var_type     :
-             { construct_type(); }
+             {  }
                scalar_type
-             { supply_type(); }
+             {  }
              | 
-             { construct_type(); }
+             {  }
              ddim_list scalar_type
-             { supply_type(); }
+             {  }
         ;
 
 func_ret_type : COLON var_type /* scalar_type */
               |
         {
-            construct_type();
-            add_type(type_void);
-            supply_type();
-
             debug_log("no return value");
         }
         ;
@@ -185,21 +168,17 @@ vacd_list    : vacd_list define_var
         ;
 
 var_list     : var_list COMMA var_name
-             { push_ident($3); }
+             {  }
              | var_name
-             { push_ident($1); }
+             {  }
         ;
 
 ddim_list    : ddim_list KWarray int_const KWto int_const KWof
         {
-            add_dim($5, $3);
-
             debug_log("array dimensional");
         }
              | KWarray int_const KWto int_const KWof
         {
-            add_dim($4, $2);
-
             debug_log("array dimensional");
         }
         ;
@@ -287,31 +266,16 @@ expr_order1  : Lparenthese expression Rparenthese
 
 define_var   : KWvar var_list COLON var_type SEMICOLON
         {
-            supply_kind(kind_vari); /* Can not early, is variable or constant? */
             debug_log("variable declaration");
         }
         ;
 
 define_const : KWvar var_list COLON const_group SEMICOLON
         {
-            supply_kind(kind_cons);
-            construct_type();
-            add_type($4.method);
-            supply_type();
-            construct_attr();
-            add_cons_attr(&($4.value), $4.method, 0);
-            supply_cons_attr();
             debug_log("const declaration");
         }
              | KWvar var_list COLON OP_DEL number_const SEMICOLON
         {
-            supply_kind(kind_cons);
-            construct_type();
-            add_type($5.method);
-            supply_type();
-            construct_attr();
-            add_cons_attr(&($5.value), $5.method, 1);
-            supply_cons_attr();
             debug_log("const declaration");
         }
         ;
@@ -321,29 +285,21 @@ define_const : KWvar var_list COLON const_group SEMICOLON
 
 define_func  : func_name
         {
-            push_ident($1);
-            supply_kind(kind_func);
-            construct_attr();
-            next_level();
         }
                Lparenthese arg_list Rparenthese
         {
-            supply_func_attr();
         }
                func_ret_type SEMICOLON
                KWbegin var_and_const_declar
                statement_declar KWend
         {
-            dump_symbol();
-            exit_level();
-
             debug_log("function declaration");
         }
                KWend IDENT
         ;
 
 define_arg   : var_list
-             { supply_kind(kind_para); /* Must supply parameter kind ASAP. */ }
+             {  }
                COLON var_type
              { debug_log("argument declaration"); }
         ;
@@ -456,19 +412,9 @@ while_start  : { debug_log("while node {");                              depth++
 
 for__statement : for_start KWfor var_name ASSIGNMENT int_const KWto int_const KWdo
         {
-            next_level();
-            push_ident($3);
-            supply_kind(kind_forv);
-            construct_type();
-            add_type(type_inte);
-            supply_type();
         }
                  statement_declar KWend KWdo
         {
-            dump_symbol();
-            exit_level();
-
-            debug_log("for }");
             depth--;
         }
         ;
@@ -550,9 +496,6 @@ dfunc_start  : { debug_log("function decalartion node {");              depth++;
 compound_statement : compound_statement_start KWbegin var_and_const_declar
                      statement_declar KWend
         {
-            dump_symbol();
-            exit_level();
-
             debug_log("compound statement }");
             depth--;
         }
@@ -560,7 +503,6 @@ compound_statement : compound_statement_start KWbegin var_and_const_declar
 
 compound_statement_start :
         {
-            next_level();
 
             debug_log("compound statement node {");
             depth++;
@@ -577,16 +519,9 @@ compound_statement_start :
 
 program      : prog_start program_name
         {
-            push_ident($2);
-            supply_kind(kind_prog);
-            construct_type();
-            add_type(type_void);
-            supply_type();
         }
                SEMICOLON program_body KWend IDENT
         {
-            dump_symbol();
-
             debug_log("program }");
             depth--;
         }
@@ -594,7 +529,6 @@ program      : prog_start program_name
 
 prog_start   :
         {
-
             debug_log("program node {");
             depth++;
         }
