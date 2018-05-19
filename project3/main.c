@@ -42,13 +42,16 @@ static void print_symbol(struct symbol *symbol)
     attr = symbol->get_attr(symbol);
     attr = (attr==0) ? invalid:attr;
 
-    printf("%-33s", name);
-    printf("%-11s", kind);
-    printf("%d%-10s", level, (level==0) ? "(global)":"(local)");
-    printf("%-17s", type);
-    printf("%-s", attr);    // Because want to match output example.
-    // printf("%-11s", attr);
-    printf("\n");
+    if(name[0] != 0)
+    {
+        printf("%-33s", name);
+        printf("%-11s", kind);
+        printf("%d%-10s", level, (level==0) ? "(global)":"(local)");
+        printf("%-17s", type);
+        printf("%-s", attr);    // Because want to match output example.
+        // printf("%-11s", attr);
+        printf("\n");
+    }
 }
 
 
@@ -56,14 +59,13 @@ int push_ident(const char *name)
 {
     struct symbol *now;
 
-    check_redeclared(s, name);
-    // if(check_redeclared(s, name) == 0)
-    {
-        now = symbol_create();
-        now->set_level(now, now_level);
+    now = symbol_create();
+    now->set_level(now, now_level);
+    if(check_redeclared(s, name) == 0)
         now->set_name(now, name);
-        s->push(s, now);
-    }
+    else
+        now->set_name(now, "");
+    s->push(s, now);
 
     return 0;
 }

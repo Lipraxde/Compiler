@@ -2,6 +2,9 @@
 //&P-
 test;
 
+var aaaa: -123;
+var bbbb: -456;
+var ccc: -789;
 // no global declaration(s)
 
 func( a:integer ; b:array 1 to 2 of array 2 to 4 of boolean ): boolean;
@@ -15,13 +18,13 @@ begin
 end
 end func
 
-bar( a:real);
+bar( a:real):string;
 begin
 
 end
 end bar
 
-bar(a:integer);
+bar(a:integer):real;
 begin
 end
 end bar
