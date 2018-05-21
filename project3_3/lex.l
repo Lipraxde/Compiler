@@ -17,6 +17,15 @@
 #define tokenScientific(t, s) { LIST; if ( Opt_T ) printf("<%s: %s>\n", t, s); }
 #define tokenString(t, s) { LIST; if (Opt_T) printf("<%s: %s>\n", t, s); }
 
+int colum;
+extern YYLTYPE yylloc;
+
+#define YY_USER_ACTION         \
+  yylloc.first_column = colum; \
+  colum += yyleng;             \
+  yylloc.first_line = linenum; \
+  yylloc.last_line = linenum;  \
+  yylloc.last_column = colum;
 
 #define  MAX_LINE_LENG  256
 
@@ -193,6 +202,7 @@ identifier	({letter})({letter}|{digit})*
 				  LIST;
 				  if  (Opt_S)
 				  	printf("%d: %s",  linenum,  buf);
+				  colum = 0;
 				  linenum++;
 				  buf[0] = '\0';
 		   		}
