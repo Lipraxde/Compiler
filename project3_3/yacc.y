@@ -128,6 +128,7 @@ func_name    : IDENT
         {
             $$ = $1;
             debug_log("function name");
+            printf("%d, %d, %d, %d", @$.first_line, @$.first_column, @$.last_line, @$.last_column);
         }
         ;
 
@@ -844,6 +845,10 @@ cond_statement : cond_start KWif expression_node KWthen statement_declar
         }
                | cond_start KWif expression_node KWthen statement_declar KWend KWif
         {
+            $$ = calloc(1, sizeof(struct cond_node));
+            $$->condition = $3;
+            $$->tpath = $5;
+
             debug_log("condition }");
             depth--;
         }
