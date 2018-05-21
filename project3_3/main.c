@@ -66,6 +66,41 @@ void exit_level(void)
 }
 
 
+void tree_print(int is_last, char *fmt, ...);
+void add_tree_level(int is_last);
+void del_tree_level(void);
+void dump_scalar(enum scalar_type type, int is_last);
+void dump_type_node(struct type_node *type, int is_last);
+void dump_const_val(struct const_node *cont, int is_last);
+void dump_vari_node(struct variable_node *head, int is_last);
+void dump_varr_node(struct varirefe_node *varr, int is_last);
+void dump_expr_node(struct expr_node *expr, int is_last);
+void dump_simp_node(struct simp_node *simp, int is_last);
+void dump_cond_node(struct cond_node *cond, int is_last);
+void dump_whil_node(struct whil_node *whil, int is_last);
+void dump_for__node(struct for__node *for_, int is_last);
+void dump_finv_node(struct finv_node *finv, int is_last);
+void dump_ret__node(struct ret__node *ret_, int is_last);
+void dump_stat_node(struct statment_node *head, int is_last);
+void dump_comp_node(struct compound_node *comp, int is_last);
+void dump_func_node(struct function_node *head, int is_last);
+void dump_ast(void);
+
+
+#define DUMP_BEGIN(name, type, str_info)        \
+void dump_##name##_node(struct type *p, int is_last)   \
+{                                               \
+    tree_print(is_last, str_info);              \
+    add_tree_level(is_last);
+
+#define DUMP_END        \
+    del_tree_level();   \
+}
+
+DUMP_BEGIN(test, simp_node, "ffff")
+
+DUMP_END
+
 void tree_print(int is_last, char *fmt, ...)
 {
     va_list arg_ptr;
@@ -126,7 +161,7 @@ void dump_scalar(enum scalar_type type, int is_last)
 void dump_type_node(struct type_node *type, int is_last)
 {
     add_tree_level(is_last);
-
+    
     dump_scalar(type->type, (type->dim==0)? 1:0);
     struct dim_list *temp = type->dim;
     while(temp != 0)
@@ -136,8 +171,7 @@ void dump_type_node(struct type_node *type, int is_last)
         temp = temp->next;
     }
 
-    del_tree_level();
-}
+DUMP_END
 
 
 void dump_const_val(struct const_node *cont, int is_last)
@@ -147,65 +181,134 @@ void dump_const_val(struct const_node *cont, int is_last)
     tree_print(0, "constant");
     dump_scalar(cont->type, 1);
 
-    del_tree_level();
-}
+DUMP_END
 
-void dump_vari_node(struct variable_node *head, int is_last)
-{
-    tree_print(is_last, "variable and constant declartion");
-    add_tree_level(is_last);
 
-    while(head != 0)
+DUMP_BEGIN(vari, variable_node, "variable and constant declartion")
+    while(p != 0)
     {
-        int is_last = (head->sibling==0)? 1:0;
-        tree_print(is_last, "%s", head->name);
-        if(head->type != 0)
-            dump_type_node(head->type, is_last);
-        else if(head->const_val != 0)
-            dump_const_val(head->const_val, is_last);
-        head = head->sibling;
+        int is_last = (p->sibling==0)? 1:0;
+        tree_print(is_last, "%s", p->name);
+        if(p->type != 0)
+            dump_type_node(p->type, is_last);
+        else if(p->const_val != 0)
+            dump_const_val(p->const_val, is_last);
+        p = p->sibling;
     }
-
-    del_tree_level();
-}
+DUMP_END
 
 
-void dump_comp_node(struct compound_node *comp, int is_last)
-{
-    tree_print(is_last, "compound statement");
-    add_tree_level(is_last);
+DUMP_BEGIN(varr, varirefe_node, "variable reference")
 
-    dump_vari_node(comp->loc_var, 0);
-    tree_print(1, "statement declartion");
-
-    del_tree_level();
-}
+DUMP_END
 
 
-void dump_func_node(struct function_node *head, int is_last)
-{
-    tree_print(is_last, "function declartion");
-    add_tree_level(is_last);
+DUMP_BEGIN(expr, expr_node, "expression")
 
-    while(head != 0)
+DUMP_END
+
+
+DUMP_BEGIN(simp, simp_node, "simple")
+    dump_varr_node(p->lhs, 0);
+    dump_expr_node(p->rhs, 1);
+DUMP_END
+
+
+DUMP_BEGIN(cond, cond_node, "condition")
+    dump_expr_node(p->condition, 0);
+    dump_stat_node(p->tpath, 0);
+    dump_stat_node(p->fpath, 1);
+DUMP_END
+
+
+DUMP_BEGIN(whil, whil_node, "while loop")
+    dump_expr_node(p->condition, 0);
+    dump_stat_node(p->stat, 1);
+DUMP_END
+
+
+DUMP_BEGIN(for_, for__node, "for loop")
+    tree_print(0, "loop variable: %s", p->i->name);
+    tree_print(0, "%d to %d", p->start, p->end);
+    dump_stat_node(p->stat, 1);
+DUMP_END
+
+
+DUMP_BEGIN(finv, finv_node, "function invocation")
+    tree_print(0, "function name: %s", p->name);
+    dump_expr_node(p->exprs, 0);
+    if(p->ret_type != 0)
+        dump_type_node(p->ret_type, 1);     // FIXME: Need apply function return type.
+DUMP_END
+
+
+DUMP_BEGIN(ret_, ret__node, "return")
+    dump_expr_node(p->expr, 1);
+DUMP_END
+
+
+DUMP_BEGIN(stat, statment_node, "statement declartion")
+    while(p != 0)
     {
-        int is_last = (head->sibling==0)? 1:0;
+        int is_last = (p->sibling==0)? 1:0;
+    
+        switch(p->mode)
+        {
+            case COMP_STAT:
+                dump_comp_node(p->comp, is_last);
+                break;
+            case SIMP_STAT:
+                dump_simp_node(p->simp, is_last);
+                break;
+            case COND_STAT:
+                dump_cond_node(p->cond, is_last);
+                break;
+            case WHIL_STAT:
+                dump_whil_node(p->whil, is_last);
+                break;
+            case FOR__STAT:
+                dump_for__node(p->for_, is_last);
+                break;
+            case FINV_STAT:
+                dump_finv_node(p->finv, is_last);
+                break;
+            case RET__STAT:
+                dump_ret__node(p->ret_, is_last);
+                break;
+            default:
+                tree_print(is_last, "unknow");
+                break;
+        }
 
-        tree_print(is_last, "%s", head->name);
+        p = p->sibling;
+    }
+DUMP_END
+
+
+DUMP_BEGIN(comp, compound_node, "compound statement")
+    dump_vari_node(p->loc_var, 0);
+	dump_stat_node(p->stat, 1);
+DUMP_END
+
+
+DUMP_BEGIN(func, function_node, "function declartion")
+    while(p != 0)
+    {
+        int is_last = (p->sibling==0)? 1:0;
+
+        tree_print(is_last, "%s", p->name);
         add_tree_level(is_last);
 
-        dump_vari_node(head->arg, 0);
+        dump_vari_node(p->arg, 0);
         tree_print(0, "function return type");
-        dump_type_node(head->ret_type, 0);
+        dump_type_node(p->ret_type, 0);
 
-        dump_comp_node(head->comp, 1);
+        dump_comp_node(p->comp, 1);
 
         del_tree_level();
-        head = head->sibling;
+        p = p->sibling;
     }
-
-    del_tree_level();
-}
+DUMP_END
 
 
 void dump_ast(void)
@@ -213,6 +316,7 @@ void dump_ast(void)
     tree_lead[0] = 0;
     printf("file name: %s.p\n", prog_name);
 	printf("%s\n", ast->name);
+
     dump_vari_node(ast->vacd, 0);
     dump_func_node(ast->func, 0);
     dump_comp_node(ast->comp, 1);
