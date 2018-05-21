@@ -128,7 +128,6 @@ func_name    : IDENT
         {
             $$ = $1;
             debug_log("function name");
-            printf("%d, %d, %d, %d", @$.first_line, @$.first_column, @$.last_line, @$.last_column);
         }
         ;
 
@@ -146,6 +145,7 @@ number_const : int_const
             $$ = calloc(1, sizeof(struct const_node));
             $$->int_val = $1;
             $$->type = INTE_TYPE;
+            $$->loc = @$;
 
             debug_log("number const");
         }
@@ -154,6 +154,7 @@ number_const : int_const
             $$ = calloc(1, sizeof(struct const_node));
             $$->real_val = $1;
             $$->type = REAL_TYPE;
+            $$->loc = @$;
 
             debug_log("float const");
         }
@@ -162,6 +163,7 @@ number_const : int_const
             $$ = calloc(1, sizeof(struct const_node));
             $$->real_val = $1;
             $$->type = REAL_TYPE;
+            $$->loc = @$;
 
             debug_log("float const");
         }
@@ -172,6 +174,7 @@ string_const : STRING
             $$ = calloc(1, sizeof(struct const_node));
             $$->text_val = $1;
             $$->type = TEXT_TYPE;
+            $$->loc = @$;
 
             debug_log("string const");
         }
@@ -182,6 +185,7 @@ bool_const   : KWtrue
             $$ = calloc(1, sizeof(struct const_node));
             $$->bool_val = true;
             $$->type = BOOL_TYPE;
+            $$->loc = @$;
 
             debug_log("boolean const");
         }
@@ -190,6 +194,7 @@ bool_const   : KWtrue
             $$ = calloc(1, sizeof(struct const_node));
             $$->bool_val = false;
             $$->type = BOOL_TYPE;
+            $$->loc = @$;
 
             debug_log("boolean const");
         }
@@ -210,6 +215,7 @@ scalar_type  : KWinteger
         {
             $$ = calloc(1, sizeof(struct type_node));
             $$->type = INTE_TYPE;
+            $$->loc = @$;
 
             debug_log("integer type");
         }
@@ -217,6 +223,7 @@ scalar_type  : KWinteger
         {
             $$ = calloc(1, sizeof(struct type_node));
             $$->type = REAL_TYPE;
+            $$->loc = @$;
 
             debug_log("real type");
         }
@@ -224,6 +231,7 @@ scalar_type  : KWinteger
         {
             $$ = calloc(1, sizeof(struct type_node));
             $$->type = TEXT_TYPE;
+            $$->loc = @$;
 
             debug_log("string type");
         }
@@ -231,6 +239,7 @@ scalar_type  : KWinteger
         {
             $$ = calloc(1, sizeof(struct type_node));
             $$->type = BOOL_TYPE;
+            $$->loc = @$;
 
             debug_log("boolean type");
         }
@@ -248,6 +257,7 @@ func_ret_type : COLON var_type /* scalar_type */
         {
             $$ = calloc(1, sizeof(struct type_node));
             $$->type = VOID_TYPE;
+            $$->loc = @$;
 
             debug_log("no return value");
         }
@@ -299,6 +309,7 @@ var_list     : var_list COMMA var_name
         {
             $$ = calloc(1, sizeof(struct variable_node));
             $$->name = $1;
+            $$->loc = @$;
         }
         ;
 
@@ -428,6 +439,7 @@ expr_order8  : expr_order8 TF_OR expr_order7     { debug_log("boolean opt or"); 
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order7
              { $$ = $1; }
@@ -442,6 +454,7 @@ expr_order7  : expr_order7 TF_AND expr_order6    { debug_log("boolean opt and");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order6
              { $$ = $1; }
@@ -455,6 +468,7 @@ expr_order6  : TF_NOT expr_order6                { debug_log("boolean opt not");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order5
              { $$ = $1; }
@@ -469,6 +483,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4 OP_LE expr_order5     { debug_log("comparsion less eq"); }
         {
@@ -479,6 +494,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4 OP_GT expr_order5     { debug_log("comparsion greater"); }
         {
@@ -489,6 +505,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4 OP_GE expr_order5     { debug_log("comparsion greater eq"); }
         {
@@ -499,6 +516,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4 OP_EQ expr_order5     { debug_log("comparsion eq"); }
         {
@@ -509,6 +527,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4 OP_NE expr_order5     { debug_log("comparsion no eq"); }
         {
@@ -519,6 +538,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4
              { $$ = $1; }
@@ -533,6 +553,7 @@ expr_order4  : expr_order4 OP_ADD expr_order3    { debug_log("operator add"); }
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order4 OP_DEL expr_order3    { debug_log("operator del"); }
         {
@@ -543,6 +564,7 @@ expr_order4  : expr_order4 OP_ADD expr_order3    { debug_log("operator add"); }
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order3
              { $$ = $1; }
@@ -557,6 +579,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order3 OP_DIV expr_order2    { debug_log("operator div"); }
         {
@@ -567,6 +590,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order3 OP_MOD expr_order2    { debug_log("operator mod"); }
         {
@@ -577,6 +601,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = INTE_TYPE;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order2
              { $$ = $1; }
@@ -590,6 +615,7 @@ expr_order2  : OP_DEL expr_order2                { debug_log("operator get negat
             $$->type = calloc(1, sizeof(struct type_node));
             $$->type->type = $2->type->type;
             $$->mode = EXPRESSION;
+            $$->loc = @$;
         }
              | expr_order1
              { $$ = $1; }
@@ -603,6 +629,7 @@ expr_order1  : Lparenthese expression Rparenthese
             $$->type = calloc(1, sizeof(struct type_node));
             $$->finv = $1;
             $$->mode = FUNCT_INVO;
+            $$->loc = @$;
         }
              | var_reference
         {
@@ -610,6 +637,7 @@ expr_order1  : Lparenthese expression Rparenthese
             $$->type = calloc(1, sizeof(struct type_node));
             $$->vref = $1;
             $$->mode = VARIA_REFE;
+            $$->loc = @$;
         }
              | const_group
         {
@@ -617,6 +645,7 @@ expr_order1  : Lparenthese expression Rparenthese
             $$->type = calloc(1, sizeof(struct type_node));
             $$->cont = $1;
             $$->mode = CONST_DATA;
+            $$->loc = @$;
         }
         ;
 
@@ -680,6 +709,7 @@ define_func  : func_name Lparenthese arg_list Rparenthese
             $$->arg = $3;
             $$->ret_type = $5;
             $$->comp = $7;
+            $$->loc = @$;
 
             debug_log("function declaration");
         }
@@ -707,42 +737,49 @@ define_state : compound_statement
             $$ = calloc(1, sizeof(struct statment_node));
             $$->comp = $1;
             $$->mode = COMP_STAT;
+            $$->loc = @$;
         }
              | simp_statement  SEMICOLON
         {
             $$ = calloc(1, sizeof(struct statment_node));
             $$->simp = $1;
             $$->mode = SIMP_STAT;
+            $$->loc = @$;
         }
              | cond_statement
         {
             $$ = calloc(1, sizeof(struct statment_node));
             $$->cond = $1;
             $$->mode = COND_STAT;
+            $$->loc = @$;
         }
              | whil_statement
         {
             $$ = calloc(1, sizeof(struct statment_node));
             $$->whil = $1;
             $$->mode = WHIL_STAT;
+            $$->loc = @$;
         }
              | for__statement
         {
             $$ = calloc(1, sizeof(struct statment_node));
             $$->for_ = $1;
             $$->mode = FOR__STAT;
+            $$->loc = @$;
         }
              | func_invocation SEMICOLON
         {
             $$ = calloc(1, sizeof(struct statment_node));
             $$->finv = $1;
             $$->mode = FINV_STAT;
+            $$->loc = @$;
         }
              | ret__statement  SEMICOLON
         {
             $$ = calloc(1, sizeof(struct statment_node));
             $$->ret_ = $1;
             $$->mode = RET__STAT;
+            $$->loc = @$;
         }
         ;
 
@@ -751,6 +788,7 @@ simp_statement  : var_reference ASSIGNMENT expression_node
             $$ = calloc(1, sizeof(struct simp_node));
             $$->lhs = $1;
             $$->rhs = $3;
+            $$->loc = @$;
 
             debug_log("simple statement");
         }
@@ -758,6 +796,7 @@ simp_statement  : var_reference ASSIGNMENT expression_node
         {
             $$ = calloc(1, sizeof(struct simp_node));
             $$->rhs = $2;
+            $$->loc = @$;
 
             debug_log("simple print");
         }
@@ -765,6 +804,7 @@ simp_statement  : var_reference ASSIGNMENT expression_node
         {
             $$ = calloc(1, sizeof(struct simp_node));
             $$->lhs = $2;
+            $$->loc = @$;
 
             debug_log("simple read");
         }
@@ -775,6 +815,7 @@ var_reference   : var_name
             $$ = calloc(1, sizeof(struct varirefe_node));
             $$->type = calloc(1, sizeof(struct type_node));
             $$->name = $1;
+            $$->loc = @$;
 
             debug_log("variable reference");
         }
@@ -784,6 +825,7 @@ var_reference   : var_name
             $$->type = calloc(1, sizeof(struct type_node));
             $$->name = $1;
             $$->ref = $2;
+            $$->loc = @$;
 
             debug_log("variable reference");
         }
@@ -794,6 +836,7 @@ func_invocation : func_name Lparenthese expr_list Rparenthese
             $$ = calloc(1, sizeof(struct finv_node));
             $$->name = $1;
             $$->exprs = $3;
+            $$->loc = @$;
 
             debug_log("function invocation");
         }
@@ -803,6 +846,7 @@ ret__statement : KWreturn expression_node
         {
             $$ = calloc(1, sizeof(struct ret__node));
             $$->expr = $2;
+            $$->loc = @$;
 
             debug_log("return");
         }
@@ -839,6 +883,7 @@ cond_statement : cond_start KWif expression_node KWthen statement_declar
             $$->condition = $3;
             $$->tpath = $5;
             $$->fpath = $8;
+            $$->loc = @$;
 
             debug_log("condition }");
             depth--;
@@ -848,6 +893,7 @@ cond_statement : cond_start KWif expression_node KWthen statement_declar
             $$ = calloc(1, sizeof(struct cond_node));
             $$->condition = $3;
             $$->tpath = $5;
+            $$->loc = @$;
 
             debug_log("condition }");
             depth--;
@@ -874,6 +920,7 @@ whil_statement : while_start KWwhile expression_node KWdo statement_declar KWend
             $$ = calloc(1, sizeof(struct whil_node));
             $$->condition = $3;
             $$->stat = $5;
+            $$->loc = @$;
 
             debug_log("while }");
             depth--;
@@ -902,6 +949,7 @@ for__statement : for_start KWfor var_name ASSIGNMENT int_const KWto int_const KW
             $$->start = $5;
             $$->end = $7;
             $$->stat = $9;
+            $$->loc = @$;
 
             debug_log("for }");
             depth--;
@@ -993,6 +1041,7 @@ compound_statement : compound_statement_start KWbegin var_and_const_declar
             $$ = calloc(1, sizeof(struct compound_node));
             $$->loc_var = $3;
             $$->stat = $4;
+            $$->loc = @$;
 
             debug_log("compound statement }");
             depth--;
@@ -1023,6 +1072,7 @@ program      : prog_start program_name SEMICOLON
             $$->vacd = $4;
             $$->func = $5;
             $$->comp = $6;
+            $$->loc = @$;
             ast = $$;
             debug_log("program }");
             depth--;

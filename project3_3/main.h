@@ -2,6 +2,7 @@
 #define __MAIN_H__
 
 #include <stdbool.h>
+#include "y.tab.h"
 
 enum scalar_type
 {
@@ -22,6 +23,7 @@ struct const_node
         char   *text_val;
     };
     enum scalar_type type;
+    YYLTYPE loc;
 };
 
 struct dim_list
@@ -29,12 +31,14 @@ struct dim_list
     int lower;
     int upper;
     struct dim_list *next;
+    YYLTYPE loc;
 };
 
 struct type_node
 {
     enum scalar_type type;
     struct dim_list *dim;
+    YYLTYPE loc;
 };
 
 struct varirefe_node
@@ -42,6 +46,7 @@ struct varirefe_node
     const char *name;
     struct type_node *type;
     struct expr_node *ref;
+    YYLTYPE loc;
 };
 
 enum expr_opt
@@ -76,6 +81,7 @@ struct expr_node
     struct type_node *type;
     enum expr_mode mode;
     struct expr_node *sibling;
+    YYLTYPE loc;
 };
 
 enum state_mode
@@ -93,6 +99,7 @@ struct simp_node
 {
     struct varirefe_node *lhs;
     struct expr_node     *rhs;
+    YYLTYPE loc;
 };
 
 struct cond_node
@@ -100,12 +107,14 @@ struct cond_node
     struct expr_node         *condition;
     struct statment_node     *tpath;
     struct statment_node     *fpath;
+    YYLTYPE loc;
 };
 
 struct whil_node
 {
     struct expr_node         *condition;
     struct statment_node     *stat;
+    YYLTYPE loc;
 };
 
 struct for__node
@@ -114,6 +123,7 @@ struct for__node
     int start;
     int end;
     struct statment_node     *stat;
+    YYLTYPE loc;
 };
 
 struct finv_node
@@ -121,11 +131,13 @@ struct finv_node
     const char               *name;
     struct expr_node         *exprs;
     struct type_node         *ret_type;
+    YYLTYPE loc;
 };
 
 struct ret__node
 {
     struct expr_node         *expr;
+    YYLTYPE loc;
 };
 
 struct statment_node
@@ -142,6 +154,7 @@ struct statment_node
     };
     enum state_mode       mode;
     struct statment_node *sibling;
+    YYLTYPE loc;
 };
 
 struct variable_node
@@ -150,6 +163,7 @@ struct variable_node
     struct type_node     *type;
     struct const_node    *const_val;
     struct variable_node *sibling;
+    YYLTYPE loc;
 };
 
 struct function_node
@@ -159,12 +173,14 @@ struct function_node
     struct type_node     *ret_type;
     struct compound_node *comp;
     struct function_node *sibling;
+    YYLTYPE loc;
 };
 
 struct compound_node
 {
     struct variable_node *loc_var;
     struct statment_node *stat;
+    YYLTYPE loc;
 };
 
 struct program_node
@@ -173,6 +189,7 @@ struct program_node
     struct variable_node *vacd;
     struct function_node *func;
     struct compound_node *comp;
+    YYLTYPE loc;
 };
 
 #endif /* __MAIN_H__ */
