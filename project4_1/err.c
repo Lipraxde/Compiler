@@ -16,13 +16,17 @@ void print_tagline(const YYLTYPE *loc)
     int elim = 0;
     int begin_col;
     int end_col;
+
     for(; (tag_line[0]!=0)&&
         ((tag_line[0]==' ')||(tag_line[0]=='\t'));
         elim++)
         tag_line = &tag_line[1];
 
     begin_col = loc->first_column - elim;
-    end_col = loc->last_column - elim;
+    if(loc->first_line == loc->last_line)
+        end_col = loc->last_column - elim;
+    else
+        end_col = strlen(tag_line);
 
     fprintf(outerr, "    %s", tag_line);
     fprintf(outerr, "    ");
@@ -34,7 +38,7 @@ void print_tagline(const YYLTYPE *loc)
         c = strlen(tag_line);
     for(; (i<c)&&(i<begin_col+31); i++)
         fprintf(outerr, "^");
-    if(i == begin_col+32)
+    if(i == begin_col+31)
         fprintf(outerr, "~");
     
     fprintf(outerr, "\n");
@@ -99,8 +103,27 @@ int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const
     {
         fprintf(outerr, "\033[31m");
         fprintf(outerr, "<Error> current return type is void\n");
-        fprintf(outerr, "Should not return value at:\n");
+        fprintf(outerr, "Should not return value at line %d:\n", loc->first_line);
         print_tagline(loc);
+        fprintf(outerr, "\033[0m");
+        return 1;
+    }
+
+    return 0;
+}
+
+
+int check_funcrettypeisscalar(struct type_node *ret_type)
+{
+    if(ret_type->dim != 0)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> return type of function should not be array type\n");
+        fprintf(outerr, "Definition at line %d:\n", ret_type->dim->loc.first_line);
+        YYLTYPE loc = ret_type->dim->loc;
+        loc.last_column = ret_type->loc.last_column;
+        loc.last_line = ret_type->loc.last_line;
+        print_tagline(&loc);
         fprintf(outerr, "\033[0m");
         return 1;
     }

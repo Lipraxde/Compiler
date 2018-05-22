@@ -48,6 +48,11 @@ void push_symbol(void *data, int whitch_struct)
             return;
     }
 
+    if((whitch_struct == STRUCT_FUNC)&&
+        (check_funcrettypeisscalar(((struct function_node *)data)->ret_type)))
+        return;
+        
+
     sym_table[sym_conut].data = data;
     sym_table[sym_conut].level = now_level;
     sym_table[sym_conut].whitch_struct = whitch_struct;
@@ -326,7 +331,7 @@ struct type_node *find_lastrettype(void)
     if((ret==0)&&(in_progcomp==0))
     {
         fprintf(outerr, "\033[31m");
-        fprintf(outerr, "<Error> can not find return type, function had been redeclared?\n");
+        fprintf(outerr, "<Error> can not find return type, function have not push to symbol table ?\n");
         fprintf(outerr, "Replace with void type.\n");
         fprintf(outerr, "\033[0m");
     }
