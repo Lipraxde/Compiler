@@ -1,0 +1,29 @@
+1: //&T-
+2: test;
+3: foo();
+4: begin
+5: 
+6: end
+7: end foo
+8: 
+9: bar(x,y: integer; z: real): real;
+10: begin
+11: 
+12: end
+13: end bar
+14: 
+15: car(x,y: integer; z: array 87 to 99 of real): 
+16:         array 10 to 20 of array 0 to 10 of real;
+17: begin
+18: end
+19: end car
+20: 
+21: begin
+22: 
+23: 
+24: end
+25: end test
+
+|--------------------------------|
+|  There is no syntactic error!  |
+|--------------------------------|
