@@ -16,9 +16,17 @@ extern FILE* yyin;	/* declared by lex */
 extern int Opt_D;
 extern struct program_node *ast;
 
+
+#define eprintf(loc, msg)   printf("<Error> found in Line %d: ", loc.first_line);   \
+                            printf("%s\n", msg);
+
 #define STRUCT_PROG 1
 #define STRUCT_VARI 2
 #define STRUCT_FUNC 3
+
+#define push_prog(pointer)  push_symbol(pointer, STRUCT_PROG)
+#define push_vari(pointer)  push_symbol(pointer, STRUCT_VARI)
+#define push_func(pointer)  push_symbol(pointer, STRUCT_FUNC)
 
 struct symbol
 {
@@ -36,6 +44,20 @@ char tree_lead[1024];
 
 void push_symbol(void *data, int whitch_struct)
 {
+    if(data == 0)   // Shoult not push null pointer
+        return;
+
+    for(int i=0; (i<sym_conut)&&(now_level==sym_table[i].level); i++)
+    {
+        struct base_node *p1 = data;
+        struct base_node *p2 = sym_table[i].data;
+
+        if(strcmp(p1->name, p2->name) == 0)
+        {
+            eprintf(p1->loc, "read~~~~~~~~~");
+        }
+    }
+
     sym_table[sym_conut].data = data;
     sym_table[sym_conut].level = now_level;
     sym_table[sym_conut].whitch_struct = whitch_struct;
@@ -44,11 +66,13 @@ void push_symbol(void *data, int whitch_struct)
 }
 
 
+// When exit_level(); will auto pop.
 void pop_symbol(int level)
 {
     while((sym_conut!=0)&&(sym_table[sym_conut-1].level>level))
         sym_conut--;
 }
+
 
 void next_level(void)
 {
@@ -59,6 +83,17 @@ void next_level(void)
 
 void exit_level(void)
 {
+    if(Opt_D)
+    {
+        printf("------------------------------\n");
+        for(int i=0; i<sym_conut; i++)
+        {
+            struct base_node *p = sym_table[i].data;
+            printf("%-10s level: %4d\n", p->name, sym_table[i].level);
+        }
+        printf("------------------------------\n");
+    }
+
     if(now_level > 0)
         now_level--;
 
@@ -97,9 +132,6 @@ void dump_##name##_node(struct type *p, int is_last)   \
     del_tree_level();   \
 }
 
-DUMP_BEGIN(test, simp_node, "ffff")
-
-DUMP_END
 
 void tree_print(int is_last, char *fmt, ...)
 {
@@ -187,6 +219,8 @@ DUMP_END
 DUMP_BEGIN(vari, variable_node, "variable and constant declartion")
     while(p != 0)
     {
+        push_vari(p);
+
         int is_last = (p->sibling==0)? 1:0;
         tree_print(is_last, "%s", p->name);
         if(p->type != 0)
@@ -228,9 +262,14 @@ DUMP_END
 
 
 DUMP_BEGIN(for_, for__node, "for loop")
+    next_level();
+    push_vari(p->i);
+
     tree_print(0, "loop variable: %s", p->i->name);
     tree_print(0, "%d to %d", p->start, p->end);
     dump_stat_node(p->stat, 1);
+
+    exit_level();
 DUMP_END
 
 
@@ -285,15 +324,25 @@ DUMP_BEGIN(stat, statment_node, "statement declartion")
 DUMP_END
 
 
+int comp_set_level = 1;
 DUMP_BEGIN(comp, compound_node, "compound statement")
+    if(comp_set_level)
+        next_level();
+
     dump_vari_node(p->loc_var, 0);
 	dump_stat_node(p->stat, 1);
+
+    if(comp_set_level)
+        exit_level();
 DUMP_END
 
 
 DUMP_BEGIN(func, function_node, "function declartion")
     while(p != 0)
     {
+        push_func(p);
+        next_level();
+
         int is_last = (p->sibling==0)? 1:0;
 
         tree_print(is_last, "%s", p->name);
@@ -303,9 +352,12 @@ DUMP_BEGIN(func, function_node, "function declartion")
         tree_print(0, "function return type");
         dump_type_node(p->ret_type, 0);
 
+        comp_set_level = 0;
         dump_comp_node(p->comp, 1);
+        comp_set_level = 1;
 
         del_tree_level();
+        exit_level();
         p = p->sibling;
     }
 DUMP_END
@@ -313,6 +365,8 @@ DUMP_END
 
 void dump_ast(void)
 {
+    push_prog(ast);
+
     tree_lead[0] = 0;
     printf("file name: %s.p\n", prog_name);
 	printf("%s\n", ast->name);

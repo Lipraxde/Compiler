@@ -15,6 +15,7 @@ enum scalar_type
 
 struct const_node
 {
+    YYLTYPE loc;
     union
     {
         int     int_val;
@@ -23,30 +24,29 @@ struct const_node
         char   *text_val;
     };
     enum scalar_type type;
-    YYLTYPE loc;
 };
 
 struct dim_list
 {
+    YYLTYPE loc;
     int lower;
     int upper;
     struct dim_list *next;
-    YYLTYPE loc;
 };
 
 struct type_node
 {
+    YYLTYPE loc;
     enum scalar_type type;
     struct dim_list *dim;
-    YYLTYPE loc;
 };
 
 struct varirefe_node
 {
+    YYLTYPE loc;
     const char *name;
     struct type_node *type;
     struct expr_node *ref;
-    YYLTYPE loc;
 };
 
 enum expr_opt
@@ -66,6 +66,7 @@ enum expr_mode
 
 struct expr_node
 {
+    YYLTYPE loc;
     union
     {
         struct const_node    *cont;
@@ -81,7 +82,6 @@ struct expr_node
     struct type_node *type;
     enum expr_mode mode;
     struct expr_node *sibling;
-    YYLTYPE loc;
 };
 
 enum state_mode
@@ -97,51 +97,52 @@ enum state_mode
 
 struct simp_node
 {
+    YYLTYPE loc;
     struct varirefe_node *lhs;
     struct expr_node     *rhs;
-    YYLTYPE loc;
 };
 
 struct cond_node
 {
+    YYLTYPE loc;
     struct expr_node         *condition;
     struct statment_node     *tpath;
     struct statment_node     *fpath;
-    YYLTYPE loc;
 };
 
 struct whil_node
 {
+    YYLTYPE loc;
     struct expr_node         *condition;
     struct statment_node     *stat;
-    YYLTYPE loc;
 };
 
 struct for__node
 {
+    YYLTYPE loc;
     struct variable_node     *i;
     int start;
     int end;
     struct statment_node     *stat;
-    YYLTYPE loc;
 };
 
 struct finv_node
 {
+    YYLTYPE loc;
     const char               *name;
     struct expr_node         *exprs;
     struct type_node         *ret_type;
-    YYLTYPE loc;
 };
 
 struct ret__node
 {
-    struct expr_node         *expr;
     YYLTYPE loc;
+    struct expr_node         *expr;
 };
 
 struct statment_node
 {
+    YYLTYPE loc;
     union
     {
         struct compound_node *comp;
@@ -154,42 +155,47 @@ struct statment_node
     };
     enum state_mode       mode;
     struct statment_node *sibling;
-    YYLTYPE loc;
 };
 
 struct variable_node
 {
+    YYLTYPE loc;
     const char *name;
     struct type_node     *type;
     struct const_node    *const_val;
     struct variable_node *sibling;
-    YYLTYPE loc;
 };
 
 struct function_node
 {
+    YYLTYPE loc;
     const char *name;
     struct variable_node *arg;
     struct type_node     *ret_type;
     struct compound_node *comp;
     struct function_node *sibling;
-    YYLTYPE loc;
 };
 
 struct compound_node
 {
+    YYLTYPE loc;
     struct variable_node *loc_var;
     struct statment_node *stat;
-    YYLTYPE loc;
 };
 
 struct program_node
 {
+    YYLTYPE loc;
     const char *name;
     struct variable_node *vacd;
     struct function_node *func;
     struct compound_node *comp;
+};
+
+struct base_node
+{
     YYLTYPE loc;
+    const char *name;   // Node may not have name information.
 };
 
 #endif /* __MAIN_H__ */
