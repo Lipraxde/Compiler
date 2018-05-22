@@ -437,7 +437,7 @@ expr_order8  : expr_order8 TF_OR expr_order7     { debug_log("boolean opt or"); 
             $$->rsite = $3;
             $$->opt = bool_or;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -452,7 +452,7 @@ expr_order7  : expr_order7 TF_AND expr_order6    { debug_log("boolean opt and");
             $$->rsite = $3;
             $$->opt = bool_and;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -466,7 +466,7 @@ expr_order6  : TF_NOT expr_order6                { debug_log("boolean opt not");
             $$->rsite = $2;
             $$->opt = bool_not;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -481,7 +481,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->rsite = $3;
             $$->opt = cmp_less;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -492,7 +492,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->rsite = $3;
             $$->opt = cmp_leq;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -503,7 +503,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->rsite = $3;
             $$->opt = cmp_gt;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -514,7 +514,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->rsite = $3;
             $$->opt = cmp_geq;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -525,7 +525,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->rsite = $3;
             $$->opt = cmp_eq;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -536,7 +536,7 @@ expr_order5  : expr_order4 OP_LT expr_order5     { debug_log("comparsion less");
             $$->rsite = $3;
             $$->opt = cmp_neq;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = BOOL_TYPE;
+            // $$->type->type = BOOL_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -551,7 +551,7 @@ expr_order4  : expr_order4 OP_ADD expr_order3    { debug_log("operator add"); }
             $$->rsite = $3;
             $$->opt = opt_add;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = REAL_TYPE;     // type coercion
+            // $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -577,7 +577,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
             $$->rsite = $3;
             $$->opt = opt_mul;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = REAL_TYPE;     // type coercion
+            // $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -588,7 +588,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
             $$->rsite = $3;
             $$->opt = opt_div;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = REAL_TYPE;     // type coercion
+            // $$->type->type = REAL_TYPE;     // type coercion
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -599,7 +599,7 @@ expr_order3  : expr_order3 OP_MUL expr_order2    { debug_log("operator mul"); }
             $$->rsite = $3;
             $$->opt = opt_mod;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = INTE_TYPE;
+            // $$->type->type = INTE_TYPE;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
@@ -613,7 +613,7 @@ expr_order2  : OP_DEL expr_order2                { debug_log("operator get negat
             $$->rsite = $2;
             $$->opt = opt_nega;
             $$->type = calloc(1, sizeof(struct type_node));
-            $$->type->type = $2->type->type;
+            // $$->type->type = $2->type->type;
             $$->mode = EXPRESSION;
             $$->loc = @$;
         }
