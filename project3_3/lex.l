@@ -29,10 +29,10 @@ extern YYLTYPE yylloc;
 
 #define  MAX_LINE_LENG  256
 
-int Opt_S = 1;				/* list source code option */
-int Opt_T = 1;				/* list token option */
+int Opt_S = 0;				/* list source code option */
+int Opt_T = 0;				/* list token option */
 int Opt_P = 0;				/* praser debug option */
-int Opt_D = 1;				/* dump symbol table option */
+int Opt_D = 0;				/* dump symbol table option */
 int Opt_A = 1;				/* dump AST option */
 int linenum = 1;			/* line number */
 char buf[MAX_LINE_LENG];		/* source code line buffer */
