@@ -309,7 +309,7 @@ var_list     : var_list COMMA var_name
         {
             $$ = calloc(1, sizeof(struct variable_node));
             $$->name = $1;
-            $$->loc = @$;
+            $$->loc = @1;
         }
         ;
 
@@ -709,7 +709,7 @@ define_func  : func_name Lparenthese arg_list Rparenthese
             $$->arg = $3;
             $$->ret_type = $5;
             $$->comp = $7;
-            $$->loc = @$;
+            $$->loc = @1;
 
             debug_log("function declaration");
         }
@@ -1072,7 +1072,7 @@ program      : prog_start program_name SEMICOLON
             $$->vacd = $4;
             $$->func = $5;
             $$->comp = $6;
-            $$->loc = @$;
+            $$->loc = @2;
             ast = $$;
             debug_log("program }");
             depth--;
