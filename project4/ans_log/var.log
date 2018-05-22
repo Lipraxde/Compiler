@@ -1,0 +1,51 @@
+1: //&T-
+2: test;
+3: var a: 87;
+4: var b: -87;
+5: var c: 123.456;
+6: var d: 8E-7;
+7: var e: -7e+8;
+8: var f: -12.8887;
+9: var g: true;
+10: var h: false;
+11: var i: "123d""dddd""""";
+12: var j: real;
+13: var k: boolean;
+14: var l: integer;
+15: var m: array 87 to 99 of integer;
+16: var n: array 87 to 99 of real;
+17: var o: array 87 to 99 of boolean;
+18: var p: array  0 to 10 of array 0 to 10 of real;
+19: foo();
+20: begin
+21: 
+22: var a: 87;
+23: var b: -87;
+24: var c: 123.456;
+25: var d: 8E-7;
+26: var e: -7e+8;
+27: var f: -12.8887;
+28: var g: true;
+29: var h: false;
+30: var i: "123d""dddd""""";
+31: 
+32: end
+33: end foo
+34: 
+35: begin
+36: var a: 87;
+37: var b: -87;
+38: var c: 123.456;
+39: var d: 8E-7;
+40: var e: -7e+8;
+41: var f: -12.8887;
+42: var g: true;
+43: var h: false;
+44: var i: "123d""dddd""""";
+45: 
+46: end
+47: end test
+
+|--------------------------------|
+|  There is no syntactic error!  |
+|--------------------------------|
