@@ -1076,6 +1076,9 @@ program      : prog_start program_name SEMICOLON
             $$->comp = $6;
             $$->loc = @2;
             $$->end_loc = @8;
+            $$->type = calloc(1, sizeof(struct type_node));
+            $$->type->type = VOID_TYPE;
+            $$->type->loc = @$;
             ast = $$;
             debug_log("program }");
             depth--;
