@@ -330,7 +330,7 @@ ddim_list    : ddim_list KWarray int_const KWto int_const KWof
             $$ = calloc(1, sizeof(struct dim_list));
             $$->lower = $2;
             $$->upper = $4;
-
+            $$->loc = @$;
             debug_log("array dimensional");
         }
         ;
