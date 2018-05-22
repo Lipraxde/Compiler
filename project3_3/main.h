@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include "y.tab.h"
 
+extern char *prog_line[];
+
 enum scalar_type
 {
     VOID_TYPE = 1,

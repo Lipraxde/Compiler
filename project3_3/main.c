@@ -9,16 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "err.h"
 #include "main.h"
 
 extern int yyparse();	/* declared by yacc */
 extern FILE* yyin;	/* declared by lex */
 extern int Opt_D;
 extern struct program_node *ast;
-
-
-#define eprintf(loc, msg)   printf("<Error> found in Line %d: ", loc.first_line);   \
-                            printf("%s\n", msg);
 
 #define STRUCT_PROG 1
 #define STRUCT_VARI 2
@@ -40,6 +37,7 @@ int sym_conut = 0;
 int now_level = 0;
 
 char prog_name[256];
+char *prog_line[10000];
 char tree_lead[1024];
 
 void push_symbol(void *data, int whitch_struct)
@@ -47,15 +45,13 @@ void push_symbol(void *data, int whitch_struct)
     if(data == 0)   // Shoult not push null pointer
         return;
 
-    for(int i=0; (i<sym_conut)&&(now_level==sym_table[i].level); i++)
+    for(int i=sym_conut-1; (i>=0)&&(now_level==sym_table[i].level); i--)
     {
-        struct base_node *p1 = data;
-        struct base_node *p2 = sym_table[i].data;
+        struct base_node *p1 = sym_table[i].data;
+        struct base_node *p2 = data;
 
-        if(strcmp(p1->name, p2->name) == 0)
-        {
-            eprintf(p1->loc, "read~~~~~~~~~");
-        }
+        if(check_redeclar(p1->name, p2->name, &p1->loc, &p2->loc))
+            return;
     }
 
     sym_table[sym_conut].data = data;
@@ -374,6 +370,11 @@ void dump_ast(void)
     dump_vari_node(ast->vacd, 0);
     dump_func_node(ast->func, 0);
     dump_comp_node(ast->comp, 1);
+/*
+extern int linenum;
+    for(int i; i<linenum; i++)
+        printf("%s", prog_line[i]);
+*/
 }
 
 
