@@ -96,7 +96,6 @@ int check_progname(const char *file_name, struct program_node *ast)
 }
 
 
-// FIXME: Not comparesion two type.
 int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const YYLTYPE *loc)
 {
     if(ret_type->type == VOID_TYPE)
@@ -107,6 +106,16 @@ int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const
         print_tagline(loc);
         fprintf(outerr, "\033[0m");
         return 1;
+    }
+
+    if(ret_type->type != expr_type->type)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> return type mismatch\n");
+        fprintf(outerr, "Return type definition at line %d:\n", ret_type->loc.first_line);
+        print_tagline(&ret_type->loc);
+        fprintf(outerr, "Return statement at line %d:\n", loc->first_line);
+        print_tagline(loc);
     }
 
     return 0;
