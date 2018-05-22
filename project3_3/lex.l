@@ -19,6 +19,7 @@
 
 int colum;
 extern YYLTYPE yylloc;
+extern char *prog_line[];
 
 #define YY_USER_ACTION         \
   yylloc.first_column = colum; \
@@ -105,7 +106,7 @@ identifier	({letter})({letter}|{digit})*
 "while"			{ token(KWwhile);	return KWwhile; }
 
 {identifier}	{
-                    yylval.text_val = strdup(yytext);;
+                    yylval.text_val = strndup(yytext, 32);;
                     tokenString("id",yytext);
                     return IDENT;
                 }
@@ -170,6 +171,7 @@ identifier	({letter})({letter}|{digit})*
 				  LIST;
 				  if( Opt_S )
 				  	printf("%d: %s",  linenum,  buf);
+                                  prog_line[linenum-1] = strdup(buf);
 				  linenum++;
 				  buf[0] = '\0';
 				  BEGIN INITIAL;
@@ -202,6 +204,7 @@ identifier	({letter})({letter}|{digit})*
 				  LIST;
 				  if  (Opt_S)
 				  	printf("%d: %s",  linenum,  buf);
+                                  prog_line[linenum-1] = strdup(buf);
 				  colum = 0;
 				  linenum++;
 				  buf[0] = '\0';
