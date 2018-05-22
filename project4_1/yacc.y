@@ -836,6 +836,7 @@ func_invocation : func_name Lparenthese expr_list Rparenthese
             $$ = calloc(1, sizeof(struct finv_node));
             $$->name = $1;
             $$->exprs = $3;
+            $$->ret_type = calloc(1, sizeof(struct type_node));
             $$->loc = @$;
 
             debug_log("function invocation");
@@ -1069,10 +1070,12 @@ program      : prog_start program_name SEMICOLON
         {
             $$ = calloc(1, sizeof(struct program_node));
             $$->name = $2;
+            $$->end_name = $8;
             $$->vacd = $4;
             $$->func = $5;
             $$->comp = $6;
             $$->loc = @2;
+            $$->end_loc = @8;
             ast = $$;
             debug_log("program }");
             depth--;

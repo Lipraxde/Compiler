@@ -188,6 +188,7 @@ void dump_scalar(enum scalar_type type, int is_last)
 
 void dump_type_node(struct type_node *type, int is_last)
 {
+    tree_print(is_last, "type");
     add_tree_level(is_last);
     
     dump_scalar(type->type, (type->dim==0)? 1:0);
@@ -198,17 +199,15 @@ void dump_type_node(struct type_node *type, int is_last)
         tree_print(is_last, "dim %d to %d", temp->lower, temp->upper);
         temp = temp->next;
     }
-
 DUMP_END
 
 
 void dump_const_val(struct const_node *cont, int is_last)
 {
+    tree_print(is_last, "constant");
     add_tree_level(is_last);
 
-    tree_print(0, "constant");
     dump_scalar(cont->type, 1);
-
 DUMP_END
 
 
@@ -218,7 +217,7 @@ DUMP_BEGIN(vari, variable_node, "variable and constant declartion")
         push_vari(p);
 
         int is_last = (p->sibling==0)? 1:0;
-        tree_print(is_last, "%s", p->name);
+        tree_print(0, "%s", p->name);
         if(p->type != 0)
             dump_type_node(p->type, is_last);
         else if(p->const_val != 0)
@@ -229,18 +228,57 @@ DUMP_END
 
 
 DUMP_BEGIN(varr, varirefe_node, "variable reference")
-
+    tree_print(0, "%s", p->name);
+    dump_expr_node(p->ref, 0);
+    dump_type_node(p->type, 1);
 DUMP_END
 
 
 DUMP_BEGIN(expr, expr_node, "expression")
+    const char *opt[] = {"unknow", "+", "-", "*", "/", "\%",
+                            "-", "<", "<=", ">", ">=", "==",
+                            "!=", "or", "and", "not"};
+    while(p != 0)
+    {
+        int is_last = (p->sibling==0)? 1:0;
+    
+        switch(p->mode)
+        {
+            case CONST_DATA:
+                dump_const_val(p->cont, 0);
+                break;
+            case VARIA_REFE:
+                dump_varr_node(p->vref, 0);
+                break;
+            case FUNCT_INVO:
+                dump_finv_node(p->finv, 0);
+                break;
+            case EXPRESSION:
+                dump_expr_node(p->lsite, 0);
+                dump_expr_node(p->rsite, 0);
+                tree_print(0, "opt: %s", opt[p->opt]);
+                break;
+            default:
+                tree_print(0, "unknow");
+                break;
+        }
 
+        dump_type_node(p->type, is_last);
+        p = p->sibling;
+    }
 DUMP_END
 
 
 DUMP_BEGIN(simp, simp_node, "simple")
-    dump_varr_node(p->lhs, 0);
-    dump_expr_node(p->rhs, 1);
+    if(p->lhs == 0)
+        dump_expr_node(p->rhs, 1);
+    else if(p->rhs == 0)
+        dump_varr_node(p->lhs, 1);
+    else
+    {
+        dump_varr_node(p->lhs, 0);
+        dump_expr_node(p->rhs, 1);
+    }
 DUMP_END
 
 
@@ -272,8 +310,7 @@ DUMP_END
 DUMP_BEGIN(finv, finv_node, "function invocation")
     tree_print(0, "function name: %s", p->name);
     dump_expr_node(p->exprs, 0);
-    if(p->ret_type != 0)
-        dump_type_node(p->ret_type, 1);     // FIXME: Need apply function return type.
+    dump_type_node(p->ret_type, 1);     // FIXME: Need apply function return type.
 DUMP_END
 
 
@@ -345,7 +382,6 @@ DUMP_BEGIN(func, function_node, "function declartion")
         add_tree_level(is_last);
 
         dump_vari_node(p->arg, 0);
-        tree_print(0, "function return type");
         dump_type_node(p->ret_type, 0);
 
         comp_set_level = 0;
@@ -366,6 +402,8 @@ void dump_ast(void)
     tree_lead[0] = 0;
     printf("file name: %s.p\n", prog_name);
 	printf("%s\n", ast->name);
+
+    check_progname(prog_name, ast);
 
     dump_vari_node(ast->vacd, 0);
     dump_func_node(ast->func, 0);
@@ -396,6 +434,7 @@ int  main( int argc, char **argv )
     int i;
     for(i=strlen(prog_name); prog_name[i]!='.';i--);
     prog_name[i] = 0;
+
     yyin = fp;
 
     yyparse();

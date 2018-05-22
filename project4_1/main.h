@@ -189,6 +189,8 @@ struct program_node
 {
     YYLTYPE loc;
     const char *name;
+    YYLTYPE end_loc;
+    const char *end_name;
     struct variable_node *vacd;
     struct function_node *func;
     struct compound_node *comp;

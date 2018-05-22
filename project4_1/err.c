@@ -46,3 +46,36 @@ int check_redeclar(const char *n1, const char *n2, const YYLTYPE *l1, const YYLT
 
     return 0;
 }
+
+
+int check_progname(const char *file_name, struct program_node *ast)
+{
+    const char *head_name = ast->name;
+    const char *tail_name = ast->end_name;
+
+    if(strcmp(file_name, head_name) != 0)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> program ID is inconsistent with filename\n");
+        fprintf(outerr, "Filename: %s\n", file_name);
+        fprintf(outerr, "Beginning at line %d:\n", ast->loc.first_line);
+        print_tagline(&ast->loc);
+        fprintf(outerr, "\033[0m");
+        return 1;
+    }
+
+    if(strcmp(head_name, tail_name) != 0)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> program ID is inconsistent with beginning\n");
+        fprintf(outerr, "Beginning at line %d:\n", ast->loc.first_line);
+        print_tagline(&ast->loc);
+        fprintf(outerr, "Ending at line %d:\n", ast->end_loc.first_line);
+        print_tagline(&ast->end_loc);
+        fprintf(outerr, "\033[0m");
+        return 1;
+    }
+
+    return 0;
+}
+
