@@ -92,6 +92,7 @@ int check_progname(const char *file_name, struct program_node *ast)
 }
 
 
+// FIXME: Not comparesion two type.
 int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const YYLTYPE *loc)
 {
     if(ret_type->type == VOID_TYPE)

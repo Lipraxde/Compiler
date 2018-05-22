@@ -25,16 +25,10 @@ extern struct program_node *ast;
 #define push_vari(pointer)  push_symbol(pointer, STRUCT_VARI)
 #define push_func(pointer)  push_symbol(pointer, STRUCT_FUNC)
 
-struct symbol
-{
-	void *data;
-	int level;
-	int  whitch_struct;
-};
-
 struct symbol sym_table[200] = {0};
 int sym_conut = 0;
 int now_level = 0;
+int in_progcomp = 0;
 
 char prog_name[256];
 char *prog_line[10000];
@@ -314,7 +308,37 @@ DUMP_BEGIN(finv, finv_node, "function invocation")
 DUMP_END
 
 
+struct type_node *find_lastrettype(void)
+{
+    struct type_node *ret = 0;
+    if(in_progcomp == 0)
+    {
+        for(int i=sym_conut-1; i>=0; i--)
+        {
+            if(sym_table[i].whitch_struct == STRUCT_FUNC)
+            {
+                ret = ((struct function_node *)sym_table[i].data)->ret_type;
+                break;
+            }
+        }
+    }
+    
+    if((ret==0)&&(in_progcomp==0))
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> can not find return type, function had been redeclared?\n");
+        fprintf(outerr, "Replace with void type.\n");
+        fprintf(outerr, "\033[0m");
+    }
+    if(ret == 0)
+        ret = ast->type;
+    return ret;
+}
+
+
 DUMP_BEGIN(ret_, ret__node, "return")
+    struct type_node *now_rettype = find_lastrettype();
+    check_rettype(now_rettype, p->expr->type, &p->loc);
     dump_expr_node(p->expr, 1);
 DUMP_END
 
@@ -407,6 +431,7 @@ void dump_ast(void)
 
     dump_vari_node(ast->vacd, 0);
     dump_func_node(ast->func, 0);
+    in_progcomp = 1;
     dump_comp_node(ast->comp, 1);
 /*
 extern int linenum;

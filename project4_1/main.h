@@ -4,7 +4,15 @@
 #include <stdbool.h>
 #include "y.tab.h"
 
+struct symbol
+{
+	void *data;
+	int level;
+	int  whitch_struct;
+};
+
 extern char *prog_line[];
+extern struct symbol sym_table[];
 
 enum scalar_type
 {
@@ -191,6 +199,7 @@ struct program_node
     const char *name;
     YYLTYPE end_loc;
     const char *end_name;
+    struct type_node     *type;
     struct variable_node *vacd;
     struct function_node *func;
     struct compound_node *comp;
