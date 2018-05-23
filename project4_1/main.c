@@ -3,6 +3,7 @@
  * Prjoect 2 main function
  */
 
+#include <libgen.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -15,18 +16,15 @@
 extern int yyparse();	/* declared by yacc */
 extern FILE* yyin;	/* declared by lex */
 extern int Opt_D;
+extern int Opt_A;
 extern struct program_node *ast;
-
-#define STRUCT_PROG 1
-#define STRUCT_VARI 2
-#define STRUCT_FUNC 3
 
 #define push_prog(pointer)  push_symbol(pointer, STRUCT_PROG)
 #define push_vari(pointer)  push_symbol(pointer, STRUCT_VARI)
 #define push_func(pointer)  push_symbol(pointer, STRUCT_FUNC)
 
 struct symbol sym_table[200] = {0};
-int sym_conut = 0;
+int sym_count = 0;
 int now_level = 0;
 int in_progcomp = 0;
 
@@ -39,7 +37,7 @@ void push_symbol(void *data, int whitch_struct)
     if(data == 0)   // Shoult not push null pointer
         return;
 
-    for(int i=sym_conut-1; (i>=0)&&(now_level==sym_table[i].level); i--)
+    for(int i=sym_count-1; (i>=0)&&(now_level==sym_table[i].level); i--)
     {
         struct base_node *p1 = sym_table[i].data;
         struct base_node *p2 = data;
@@ -53,19 +51,19 @@ void push_symbol(void *data, int whitch_struct)
         return;
         
 
-    sym_table[sym_conut].data = data;
-    sym_table[sym_conut].level = now_level;
-    sym_table[sym_conut].whitch_struct = whitch_struct;
+    sym_table[sym_count].data = data;
+    sym_table[sym_count].level = now_level;
+    sym_table[sym_count].whitch_struct = whitch_struct;
 
-    sym_conut++;
+    sym_count++;
 }
 
 
 // When exit_level(); will auto pop.
 void pop_symbol(int level)
 {
-    while((sym_conut!=0)&&(sym_table[sym_conut-1].level>level))
-        sym_conut--;
+    while((sym_count!=0)&&(sym_table[sym_count-1].level>level))
+        sym_count--;
 }
 
 
@@ -81,7 +79,7 @@ void exit_level(void)
     if(Opt_D)
     {
         printf("------------------------------\n");
-        for(int i=0; i<sym_conut; i++)
+        for(int i=0; i<sym_count; i++)
         {
             struct base_node *p = sym_table[i].data;
             printf("%-10s level: %4d\n", p->name, sym_table[i].level);
@@ -132,14 +130,17 @@ void tree_print(int is_last, char *fmt, ...)
 {
     va_list arg_ptr;
 
-    if(is_last)
-        printf("%s\\--", tree_lead);
-    else
-        printf("%s+--", tree_lead);
-    va_start(arg_ptr, fmt);
-    vprintf(fmt, arg_ptr);
-    va_end(arg_ptr);
-    printf("\n");
+    if(Opt_A)
+    {
+        if(is_last)
+            printf("%s\\--", tree_lead);
+        else
+            printf("%s+--", tree_lead);
+        va_start(arg_ptr, fmt);
+        vprintf(fmt, arg_ptr);
+        va_end(arg_ptr);
+        printf("\n");
+    }
 }
 
 
@@ -234,9 +235,15 @@ DUMP_END
 
 
 DUMP_BEGIN(expr, expr_node, "expression")
-    const char *opt[] = {"unknow", "+", "-", "*", "/", "\%",
+    const char *opt[] = {"unknown", "+", "-", "*", "/", "\%",
                             "-", "<", "<=", ">", ">=", "==",
                             "!=", "or", "and", "not"};
+    // static int expr_level = 0;
+    // expr_level++;
+
+    // if((p!=0)&&(expr_level==1))
+    //     check_exprtypeandtypemakeup(p);
+
     while(p != 0)
     {
         int is_last = (p->sibling==0)? 1:0;
@@ -265,16 +272,27 @@ DUMP_BEGIN(expr, expr_node, "expression")
         dump_type_node(p->type, is_last);
         p = p->sibling;
     }
+
+    // expr_level--;
 DUMP_END
 
 
+// FIXME: check type
 DUMP_BEGIN(simp, simp_node, "simple")
     if(p->lhs == 0)
+    {
+        check_exprtypeandtypemakeup(p->rhs);
         dump_expr_node(p->rhs, 1);
+    }
     else if(p->rhs == 0)
+    {
+        check_variavailable(p->lhs);
         dump_varr_node(p->lhs, 1);
+    }
     else
     {
+        check_exprtypeandtypemakeup(p->rhs);
+        check_variavailable(p->lhs);
         dump_varr_node(p->lhs, 0);
         dump_expr_node(p->rhs, 1);
     }
@@ -282,6 +300,7 @@ DUMP_END
 
 
 DUMP_BEGIN(cond, cond_node, "condition")
+    check_exprtypeandtypemakeup(p->condition);
     dump_expr_node(p->condition, 0);
     dump_stat_node(p->tpath, 0);
     dump_stat_node(p->fpath, 1);
@@ -289,6 +308,7 @@ DUMP_END
 
 
 DUMP_BEGIN(whil, whil_node, "while loop")
+    check_exprtypeandtypemakeup(p->condition);
     dump_expr_node(p->condition, 0);
     dump_stat_node(p->stat, 1);
 DUMP_END
@@ -307,9 +327,10 @@ DUMP_END
 
 
 DUMP_BEGIN(finv, finv_node, "function invocation")
+    check_finv(p);
     tree_print(0, "function name: %s", p->name);
     dump_expr_node(p->exprs, 0);
-    dump_type_node(p->ret_type, 1);     // FIXME: Need apply function return type.
+    dump_type_node(p->ret_type, 1);
 DUMP_END
 
 
@@ -318,7 +339,7 @@ struct type_node *find_lastrettype(void)
     struct type_node *ret = 0;
     if(in_progcomp == 0)
     {
-        for(int i=sym_conut-1; i>=0; i--)
+        for(int i=sym_count-1; i>=0; i--)
         {
             if(sym_table[i].whitch_struct == STRUCT_FUNC)
             {
@@ -343,8 +364,9 @@ struct type_node *find_lastrettype(void)
 
 DUMP_BEGIN(ret_, ret__node, "return")
     struct type_node *now_rettype = find_lastrettype();
+    check_exprtypeandtypemakeup(p->expr);
+    dump_expr_node(p->expr, 1); // Dump expression will makeup type.
     check_rettype(now_rettype, p->expr->type, &p->loc);
-    dump_expr_node(p->expr, 1);
 DUMP_END
 
 
@@ -460,9 +482,10 @@ int  main( int argc, char **argv )
         exit(-1);
     }
 
+    argv[1] = basename(argv[1]);
     strcpy(prog_name, argv[1]);
     int i;
-    for(i=strlen(prog_name); prog_name[i]!='.';i--);
+    for(i=strlen(prog_name); (i>0)&&(prog_name[i]!='.'); i--);
     prog_name[i] = 0;
 
     yyin = fp;

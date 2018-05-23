@@ -11,8 +11,13 @@ struct symbol
 	int  whitch_struct;
 };
 
+#define STRUCT_PROG 1
+#define STRUCT_VARI 2
+#define STRUCT_FUNC 3
+
 extern char *prog_line[];
 extern struct symbol sym_table[];
+extern int sym_count;
 
 enum scalar_type
 {
@@ -55,8 +60,10 @@ struct varirefe_node
 {
     YYLTYPE loc;
     const char *name;
-    struct type_node *type;
-    struct expr_node *ref;
+    struct expr_node         *ref;
+    struct type_node         *type;
+    struct variable_node     *var;
+    int allow_arrayaccess;
 };
 
 enum expr_opt
@@ -141,7 +148,8 @@ struct finv_node
     YYLTYPE loc;
     const char               *name;
     struct expr_node         *exprs;
-    struct type_node         *ret_type;
+    struct type_node     *ret_type;
+    struct function_node     *func;
 };
 
 struct ret__node
