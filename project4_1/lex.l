@@ -172,6 +172,7 @@ identifier	({letter})({letter}|{digit})*
 				  if( Opt_S )
 				  	printf("%d: %s",  linenum,  buf);
                                   prog_line[linenum-1] = strdup(buf);
+				  colum = 0;
 				  linenum++;
 				  buf[0] = '\0';
 				  BEGIN INITIAL;
@@ -189,6 +190,8 @@ identifier	({letter})({letter}|{digit})*
 				  LIST;
 				  if  (Opt_S)
 				  	printf("%d: %s",  linenum,  buf);
+                                  prog_line[linenum-1] = strdup(buf);
+				  colum = 0;
 				  linenum++;
 				  buf[0] = '\0';
 				}
