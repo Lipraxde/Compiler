@@ -148,6 +148,7 @@ struct finv_node
 {
     YYLTYPE loc;
     const char               *name;
+    int is_checked;
     struct expr_node         *exprs;
     struct type_node     *ret_type;
     struct function_node     *func;

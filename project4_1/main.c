@@ -277,7 +277,6 @@ DUMP_BEGIN(expr, expr_node, "expression")
 DUMP_END
 
 
-// FIXME: check type
 DUMP_BEGIN(simp, simp_node, "simple")
     if(p->lhs == 0)         // print
         dump_expr_node(p->rhs, 1);
@@ -335,14 +334,9 @@ DUMP_END
 
 
 DUMP_BEGIN(finv, finv_node, "function invocation")
-    // check_finv(p);
     tree_print(0, "function name: %s", p->name);
     check_finv(p);
-    // FIXME: Avoid repeat check_exprtypeandtypemakeup, don't dump expression node
-    if(Opt_A)
-        printf("FIXME: do not dump function involve"
-                "expression list at line %d.\n", __LINE__);
-    // dump_expr_node(p->exprs, 0);
+    dump_expr_node(p->exprs, 0);
     dump_type_node(p->ret_type, 1);
 DUMP_END
 

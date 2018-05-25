@@ -517,9 +517,11 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
                     fprintf(outerr, "Parameter dimension is %d at line %d:\n",
                             arg_dim, arg_list->type->loc.first_line);
                     print_tagline(&arg_list->type->loc);
-                    fprintf(outerr, "Argument dimension is %d at line %d:\n",
-                            def_dim-ref_dim, expr_list->vref->var->loc.first_line);
-                           //  printf("~~~%p\n", expr_list->type->loc);
+                    fprintf(outerr, "Argument declared at line %d:\n",
+                            expr_list->vref->var->loc.first_line);
+                    print_tagline(&expr_list->vref->var->loc);
+                    fprintf(outerr, "Argument pass is %d at line %d:\n",
+                            def_dim-ref_dim, expr_list->vref->loc.first_line);
                     if(ref_dim == 0)
                         print_tagline(&expr_list->type->loc);
                     else
@@ -596,6 +598,10 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
 int check_finv(struct finv_node *finv)
 {
     int ret = 0;
+    if(finv->is_checked != 0)
+        return 0;
+    else
+        finv->is_checked = 2;
     ret |= check_finvrefandassigntype(finv);
     ret |= finv_makeupandtypecheck(finv);
     return ret;
