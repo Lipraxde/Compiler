@@ -249,6 +249,12 @@ void setPseudoComment( const char *text )
 		else if( text[4] == '-' )
 			Opt_D = 0;
 	 	break;
+	case 'A':
+		if( text[4] == '+' )
+			Opt_A = 1;
+		else if( text[4] == '-' )
+			Opt_A = 0;
+	 	break;
 	default:
 	 	break;
 	}

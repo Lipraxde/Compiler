@@ -307,6 +307,7 @@ var_list     : var_list COMMA var_name
                 tail = tail->sibling;
             tail->sibling = calloc(1, sizeof(struct variable_node));
             tail->sibling->name = $3;
+            tail->sibling->loc = @3;
         }
              | var_name
         {
@@ -683,6 +684,7 @@ define_var   : KWvar var_list COLON var_type SEMICOLON
             while(temp != 0)
             {
                 temp->type = $4;
+                temp->var_mode = 0; // variable
                 temp = temp->sibling;
             }
             $$->loc = @4;
@@ -695,9 +697,13 @@ define_const : KWvar var_list COLON const_group SEMICOLON
         {
             $$ = $2;
             struct variable_node *temp = $$;
+
             while(temp != 0)
             {
+                temp->type = calloc(1, sizeof(struct type_node));
+                temp->type->type = $4->type;
                 temp->const_val = $4;
+                temp->var_mode = 1; // constant
                 temp = temp->sibling;
             }
 
@@ -709,11 +715,15 @@ define_const : KWvar var_list COLON const_group SEMICOLON
             struct variable_node *temp = $$;
             while(temp != 0)
             {
+                temp->type = calloc(1, sizeof(struct type_node));
+                temp->type->type = $5->type;
                 if($5->type == INTE_TYPE)
                     $5->int_val = -$5->int_val;
                 else /* REAL_TYPE */
                     $5->real_val = -$5->real_val;
                 temp->const_val = $5;
+                temp->type->type = temp->const_val->type;
+                temp->var_mode = 1; // constant
                 temp = temp->sibling;
             }
 
@@ -747,6 +757,7 @@ define_arg   : var_list COLON var_type
             while(temp != 0)
             {
                 temp->type = $3;
+                temp->var_mode = 0; // variable
                 temp = temp->sibling;
             }
 
@@ -972,9 +983,14 @@ for__statement : for_start KWfor var_name ASSIGNMENT int_const KWto int_const KW
             $$->i->name = $3;
             $$->i->type = calloc(1, sizeof(struct type_node));
             $$->i->type->type = INTE_TYPE;
+            $$->i->var_mode = 2;// loop parameter
+            $$->i->loc = @3;
             $$->start = $5;
             $$->end = $7;
             $$->stat = $9;
+            $$->ploc = @5;
+            $$->ploc.last_line = @7.last_line;
+            $$->ploc.last_column = @7.last_column;
             $$->loc = @$;
 
             debug_log("for }");

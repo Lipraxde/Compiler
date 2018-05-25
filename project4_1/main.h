@@ -140,6 +140,7 @@ struct for__node
     struct variable_node     *i;
     int start;
     int end;
+    YYLTYPE ploc;
     struct statment_node     *stat;
 };
 
@@ -182,6 +183,7 @@ struct variable_node
     struct type_node     *type;
     struct const_node    *const_val;
     struct variable_node *sibling;
+    int var_mode; // 0 = variable, 1 = constant, 2 = loop parameter
 };
 
 struct function_node

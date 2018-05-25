@@ -53,7 +53,7 @@ int check_redeclar(const char *n1, const char *n2, const YYLTYPE *l1, const YYLT
         print_tagline(l1);
         fprintf(outerr, "New declared at line %d:\n", l2->last_line);
         print_tagline(l2);
-        printf("\n");
+        fprintf(outerr, "\n");
 
         return 1;
     }
@@ -75,7 +75,7 @@ int check_progname(const char *file_name, struct program_node *ast)
         fprintf(outerr, "Filename: %s\n", file_name);
         fprintf(outerr, "Beginning at line %d:\n", ast->loc.first_line);
         print_tagline(&ast->loc);
-        printf("\n");
+        fprintf(outerr, "\n");
         return 1;
     }
 
@@ -88,7 +88,7 @@ int check_progname(const char *file_name, struct program_node *ast)
         print_tagline(&ast->loc);
         fprintf(outerr, "Ending at line %d:\n", ast->end_loc.first_line);
         print_tagline(&ast->end_loc);
-        printf("\n");
+        fprintf(outerr, "\n");
         return 1;
     }
 
@@ -105,11 +105,10 @@ int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const
         fprintf(outerr, "\033[0m");
         fprintf(outerr, "Should not return value at line %d:\n", loc->first_line);
         print_tagline(loc);
-        printf("\n");
+        fprintf(outerr, "\n");
         return 1;
     }
 
-    // FIXME: need test
     if(ret_type->type != expr_type->type)
     {
         fprintf(outerr, "\033[31m");
@@ -119,7 +118,7 @@ int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const
         print_tagline(&ret_type->loc);
         fprintf(outerr, "Return statement at line %d:\n", loc->first_line);
         print_tagline(loc);
-        printf("\n");
+        fprintf(outerr, "\n");
     }
 
     return 0;
@@ -138,7 +137,7 @@ int check_funcrettypeisscalar(struct type_node *ret_type)
         loc.last_column = ret_type->loc.last_column;
         loc.last_line = ret_type->loc.last_line;
         print_tagline(&loc);
-        printf("\n");
+        fprintf(outerr, "\n");
         return 1;
     }
 
@@ -177,7 +176,7 @@ static int check_varirefandassigntype(struct varirefe_node *varr)
         fprintf(outerr, "\033[0m");
         fprintf(outerr, "Variable refernece at line %d:\n", varr->loc.first_line);
         print_tagline(&varr->loc);
-        printf("\n");
+        fprintf(outerr, "\n");
 
         return 1;
     }
@@ -185,10 +184,10 @@ static int check_varirefandassigntype(struct varirefe_node *varr)
     return 0;
 }
 
-static int check_typematch(struct type_node *type, enum scalar_type scalar[], int n)
+static const char *text[] = {"unknown", "void", "integer", "real", "boolean", "string"};
+int check_typematch(struct type_node *type, enum scalar_type scalar[], int n)
 {
     int ret = 1;
-    const char *text[] = {"unknown", "void", "integer", "real", "boolean", "string"};
 
     for(int i=0; i<n; i++)
     {
@@ -212,7 +211,15 @@ static int check_typematch(struct type_node *type, enum scalar_type scalar[], in
             fprintf(outerr, " type\n");
         fprintf(outerr, "But %s type at line %d:\n", text[type->type], type->loc.first_line);
         print_tagline(&type->loc);
-        printf("\n");
+        if(type->type == 0)
+        {
+            int sz;
+            if(n > 0)   sz = n-1;
+            else        sz = 0;
+            fprintf(outerr, "Assume it %s type\n", text[scalar[sz]]);
+            type->type = scalar[sz];
+            fprintf(outerr, "\n");
+        }
     }
 
     return ret;
@@ -226,6 +233,9 @@ static int check_varirefdim(struct varirefe_node *varr)
     enum scalar_type type_arr[4];
     int ref_dimconut = 0;
     int var_dimconut = 0;
+
+    if(varr->var == 0)
+        return 0;
 
     struct expr_node *expr_list = varr->ref;
     while(expr_list != 0)
@@ -250,13 +260,22 @@ static int check_varirefdim(struct varirefe_node *varr)
         fprintf(outerr, "\033[31m");
         fprintf(outerr, "<Error> dimension of declaration is greater than reference one\n");
         fprintf(outerr, "\033[0m");
-        fprintf(outerr, "Declaration dimension is %d at line %d:\n",
-                var_dimconut, varr->type->loc.first_line);
-        print_tagline(&varr->type->loc);
+        if(var_dimconut == 0)
+        {
+            fprintf(outerr, "Declaration type is scalar at line %d:\n",
+                    varr->var->loc.first_line);
+            print_tagline(&varr->var->loc);
+        }
+        else
+        {
+            fprintf(outerr, "Declaration dimension is %d at line %d:\n",
+                    var_dimconut, varr->type->loc.first_line);
+            print_tagline(&varr->type->loc);
+        }
         fprintf(outerr, "Refernece dimension is %d at line %d:\n",
                 ref_dimconut, varr->loc.first_line);
         print_tagline(&varr->loc);
-        printf("\n");
+        fprintf(outerr, "\n");
 
         ret = 1;
     }
@@ -268,7 +287,7 @@ static int check_varirefdim(struct varirefe_node *varr)
         fprintf(outerr, "\033[0m");
         fprintf(outerr, "Access array at line %d:\n", varr->loc.first_line);
         print_tagline(&varr->loc);
-        printf("\n");
+        fprintf(outerr, "\n");
 
         ret = 1;
     }
@@ -283,6 +302,47 @@ int check_variavailable(struct varirefe_node *varr)
     ret |= check_varirefandassigntype(varr);
     ret |= check_varirefdim(varr);
     return ret;
+}
+
+
+int check_variwriteable(struct varirefe_node *varr)
+{
+    if(varr->var == 0)
+        return 1;
+
+    if(varr->var->var_mode == 1)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> Assign constant variable is not allow\n");
+        fprintf(outerr, "\033[0m");
+        fprintf(outerr, "Constant variable is declared at line %d:\n",
+                varr->var->loc.first_line);
+        print_tagline(&varr->var->loc);
+        fprintf(outerr, "Assign constant variable at line %d:\n", varr->loc.first_line);
+        print_tagline(&varr->loc);
+        fprintf(outerr, "\n");
+        return 1;
+    }
+    else if(varr->var->var_mode == 2)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> Assign loop variable is not allow\n");
+        fprintf(outerr, "\033[0m");
+        fprintf(outerr, "Loop variable is declared at line %d:\n",
+                varr->var->loc.first_line);
+        print_tagline(&varr->var->loc);
+        fprintf(outerr, "Assign loop variable at line %d:\n", varr->loc.first_line);
+        print_tagline(&varr->loc);
+        fprintf(outerr, "\n");
+        return 1;
+    }
+    else if(varr->var->var_mode != 0)
+    {
+        printf("unknown error\n");
+        return 1;
+    }
+
+    return 0;
 }
 
 
@@ -386,12 +446,7 @@ static int check_finvrefandassigntype(struct finv_node *finv)
     }
 
     if(type_ref != 0)
-    {
         finv->func = func_ref;
-        finv->ret_type->type = type_ref->type;
-        finv->ret_type->dim = type_ref->dim;
-        finv->ret_type->loc = type_ref->loc;
-    }
     else
     {
         fprintf(outerr, "\033[31m");
@@ -399,11 +454,9 @@ static int check_finvrefandassigntype(struct finv_node *finv)
         fprintf(outerr, "\033[0m");
         fprintf(outerr, "Function refernece at line %d:\n", finv->loc.first_line);
         print_tagline(&finv->loc);
-        printf("\n");
-
+        fprintf(outerr, "\n");
         return 1;
     }
-
     return 0;
 }
 
@@ -412,7 +465,8 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
 {
     int ret = 0;
     struct expr_node *expr_list;
-    struct variable_node *arg_list;
+    struct expr_node *redunt_expr = 0;
+    struct variable_node *arg_list = 0;
 
     expr_list = finv->exprs;
     if(finv->func != 0)
@@ -420,12 +474,12 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
 
     while(expr_list != 0)
     {
-        // Makeup argument type
         if(expr_list->mode == VARIA_REFE)
             expr_list->vref->allow_arrayaccess = 1;
+        // Makeup argument type
         ret |= check_exprtypeandtypemakeup(expr_list);
         // Type check
-        if((finv->func!=0)&&(arg_list!=0))
+        if(arg_list != 0)
         {
             int n;
             enum scalar_type type_arr[4];
@@ -470,12 +524,41 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
                         print_tagline(&expr_list->type->loc);
                     else
                         print_tagline(&expr_list->vref->ref->loc);
-                    printf("\n");
+                    fprintf(outerr, "\n");
+                }
+                else
+                {
+                    // Check dimension size match
+                    struct dim_list *par_dimlist = arg_list->type->dim;
+                    struct dim_list *arg_dimlist = expr_list->vref->type->dim;
+                    
+                    while((par_dimlist!=0)&&(arg_dimlist!=0))
+                    {
+                        int par, arg;
+                        par = par_dimlist->upper - par_dimlist->lower;
+                        arg = arg_dimlist->upper - arg_dimlist->lower;
+                        if(par != arg)
+                        {
+                            fprintf(outerr, "\033[31m");
+                            fprintf(outerr, "<Error> Dimension size mismatch\n");
+                            fprintf(outerr, "\033[0m");
+                            fprintf(outerr, "One of size at line %d:\n",
+                                    par_dimlist->loc.first_line);
+                            print_tagline(&par_dimlist->loc);
+                            fprintf(outerr, "Anther ont size at line %d:\n",
+                                    arg_dimlist->loc.first_line);
+                            print_tagline(&arg_dimlist->loc);
+                            fprintf(outerr, "\n");
+                        }
+                        par_dimlist = par_dimlist->next;
+                        arg_dimlist = arg_dimlist->next;
+                    }
                 }
             }
 
             arg_list = arg_list->sibling;
         }
+
         expr_list = expr_list->sibling;
 
         // Argument declaration not enough
@@ -486,17 +569,26 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
             fprintf(outerr, "\033[0m");
             fprintf(outerr, "Redundant(?) argument at line %d:\n", expr_list->loc.first_line);
             print_tagline(&expr_list->loc);
-            printf("\n");
+            fprintf(outerr, "\n");
         }
     }
 
     // Expresstion(input arg) not enough
-    if((finv->func!=0)&&(arg_list!=0))
-        printf("CCCCCCCCCCc\n");
+    if(arg_list!=0)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> argument are not enough\n");
+        fprintf(outerr, "\033[0m");
+        fprintf(outerr, "Redundant(?) argument at line %d:\n",
+                arg_list->loc.first_line);
+        print_tagline(&arg_list->loc);
+        fprintf(outerr, "Involved at line %d:\n", finv->loc.first_line);
+        print_tagline(&finv->loc);
+        fprintf(outerr, "\n");
+    }
 
     if(finv->func != 0)
         finv->ret_type = finv->func->ret_type;
-
     return ret;
 }
 
@@ -525,7 +617,8 @@ int check_exprtypeandtypemakeup(struct expr_node *expr)
             break;
         case FUNCT_INVO:
             ret |= check_finv(expr->finv);
-            expr->type->type = expr->finv->ret_type->type;
+            if(expr->finv->func != 0)
+                expr->type->type = expr->finv->func->ret_type->type;
             break;
         case EXPRESSION:
             ret = expr_typemakeupandcheck(expr);
@@ -536,5 +629,49 @@ int check_exprtypeandtypemakeup(struct expr_node *expr)
 
     // print_tagline(&expr->type->loc);
     return ret;
+}
+
+
+int check_foriinit(struct for__node *for_)
+{
+    int from = for_->start;
+    int to = for_->end;
+
+    if(from > to)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> loop parameter lower bound is greater then upper bound\n");
+        fprintf(outerr, "\033[0m");
+        fprintf(outerr, "Loop parameter from %d to %d at line %d:\n",
+                from, to, for_->ploc.first_line);
+        print_tagline(&for_->ploc);
+        fprintf(outerr, "\n");
+    }
+
+    return 0;
+}
+
+
+int check_lhsandrhstype(struct simp_node *p)
+{
+    struct varirefe_node *lhs = p->lhs;
+    struct expr_node *rhs = p->rhs;
+
+    if((lhs->var!=0)&&(lhs->var->type->type!=rhs->type->type))
+    {
+        if((lhs->var->type->type==REAL_TYPE)&&
+            (rhs->type->type==INTE_TYPE))
+            return 0;
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> type mismatch LHS and RHS\n");
+        fprintf(outerr, "\033[0m");
+        fprintf(outerr, "At line %d:\n", p->loc.first_line);
+        fprintf(outerr, "LHS is %s type\n", text[lhs->var->type->type]);
+        fprintf(outerr, "RHS is %s type\n", text[rhs->type->type]);
+        print_tagline(&p->loc);
+        fprintf(outerr, "\n");
+    }
+
+    return 0;
 }
 

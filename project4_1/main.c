@@ -238,16 +238,16 @@ DUMP_BEGIN(expr, expr_node, "expression")
     const char *opt[] = {"unknown", "+", "-", "*", "/", "\%",
                             "-", "<", "<=", ">", ">=", "==",
                             "!=", "or", "and", "not"};
-    // static int expr_level = 0;
-    // expr_level++;
-
-    // if((p!=0)&&(expr_level==1))
-    //     check_exprtypeandtypemakeup(p);
+    static int expr_level = 0;
 
     while(p != 0)
     {
         int is_last = (p->sibling==0)? 1:0;
-    
+
+        if(expr_level == 0)
+            check_exprtypeandtypemakeup(p);
+
+        expr_level++;
         switch(p->mode)
         {
             case CONST_DATA:
@@ -268,48 +268,55 @@ DUMP_BEGIN(expr, expr_node, "expression")
                 tree_print(0, "unknow");
                 break;
         }
+        expr_level--;
 
         dump_type_node(p->type, is_last);
         p = p->sibling;
     }
 
-    // expr_level--;
 DUMP_END
 
 
 // FIXME: check type
 DUMP_BEGIN(simp, simp_node, "simple")
-    if(p->lhs == 0)
-    {
-        check_exprtypeandtypemakeup(p->rhs);
+    if(p->lhs == 0)         // print
         dump_expr_node(p->rhs, 1);
-    }
-    else if(p->rhs == 0)
+    else if(p->rhs == 0)    // read
     {
         check_variavailable(p->lhs);
+        check_variwriteable(p->lhs);
         dump_varr_node(p->lhs, 1);
     }
     else
     {
-        check_exprtypeandtypemakeup(p->rhs);
         check_variavailable(p->lhs);
+        check_variwriteable(p->lhs);
         dump_varr_node(p->lhs, 0);
         dump_expr_node(p->rhs, 1);
+        check_lhsandrhstype(p);
     }
 DUMP_END
 
 
 DUMP_BEGIN(cond, cond_node, "condition")
-    check_exprtypeandtypemakeup(p->condition);
+    int n;
+    enum scalar_type type_arr[4];
+
     dump_expr_node(p->condition, 0);
+    type_arr[0] = BOOL_TYPE;    n = 1;
+    check_typematch(p->condition->type, type_arr, n);
     dump_stat_node(p->tpath, 0);
     dump_stat_node(p->fpath, 1);
 DUMP_END
 
 
 DUMP_BEGIN(whil, whil_node, "while loop")
-    check_exprtypeandtypemakeup(p->condition);
+    int n;
+    enum scalar_type type_arr[4];
+
     dump_expr_node(p->condition, 0);
+    type_arr[0] = BOOL_TYPE;    n = 1;
+    check_typematch(p->condition->type, type_arr, n);
     dump_stat_node(p->stat, 1);
 DUMP_END
 
@@ -318,6 +325,7 @@ DUMP_BEGIN(for_, for__node, "for loop")
     next_level();
     push_vari(p->i);
 
+    check_foriinit(p);
     tree_print(0, "loop variable: %s", p->i->name);
     tree_print(0, "%d to %d", p->start, p->end);
     dump_stat_node(p->stat, 1);
@@ -327,9 +335,14 @@ DUMP_END
 
 
 DUMP_BEGIN(finv, finv_node, "function invocation")
-    check_finv(p);
+    // check_finv(p);
     tree_print(0, "function name: %s", p->name);
-    dump_expr_node(p->exprs, 0);
+    check_finv(p);
+    // FIXME: Avoid repeat check_exprtypeandtypemakeup, don't dump expression node
+    if(Opt_A)
+        printf("FIXME: do not dump function involve"
+                "expression list at line %d.\n", __LINE__);
+    // dump_expr_node(p->exprs, 0);
     dump_type_node(p->ret_type, 1);
 DUMP_END
 
@@ -364,9 +377,8 @@ struct type_node *find_lastrettype(void)
 
 DUMP_BEGIN(ret_, ret__node, "return")
     struct type_node *now_rettype = find_lastrettype();
-    check_exprtypeandtypemakeup(p->expr);
     dump_expr_node(p->expr, 1); // Dump expression will makeup type.
-    check_rettype(now_rettype, p->expr->type, &p->loc);
+    // check_rettype(now_rettype, p->expr->type, &p->loc);
 DUMP_END
 
 
