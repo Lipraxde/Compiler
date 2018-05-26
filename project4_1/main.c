@@ -45,6 +45,18 @@ void push_symbol(void *data, int whitch_struct)
         if(check_redeclar(p1->name, p2->name, &p1->loc, &p2->loc))
             return;
     }
+    for(int i=sym_count-1; i>=0; i--)
+    {
+        if(sym_table[i].whitch_struct != STRUCT_VARI)
+            continue;
+        if(((struct variable_node *)sym_table[i].data)->var_mode != 2)  // loop parameter
+            continue;
+        struct base_node *p1 = sym_table[i].data;
+        struct base_node *p2 = data;
+
+        if(check_redeclar(p1->name, p2->name, &p1->loc, &p2->loc))
+            return;
+    }
 
     if((whitch_struct == STRUCT_FUNC)&&
         (check_funcrettypeisscalar(((struct function_node *)data)->ret_type)))
@@ -372,7 +384,7 @@ struct type_node *find_lastrettype(void)
 DUMP_BEGIN(ret_, ret__node, "return")
     struct type_node *now_rettype = find_lastrettype();
     dump_expr_node(p->expr, 1); // Dump expression will makeup type.
-    // check_rettype(now_rettype, p->expr->type, &p->loc);
+    check_rettype(now_rettype, p->expr->type, &p->loc);
 DUMP_END
 
 

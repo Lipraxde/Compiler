@@ -509,7 +509,7 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
                 iexpr_list = expr_list->vref->ref;
                 for(ref_dim=0; iexpr_list!=0; ref_dim++, iexpr_list=iexpr_list->sibling);
 
-                if(def_dim-ref_dim != arg_dim)
+                if((def_dim-ref_dim!=arg_dim)&&(expr_list->vref->var!=0))
                 {
                     fprintf(outerr, "\033[31m");
                     fprintf(outerr, "<Error> Dimension mismatch\n");
@@ -598,12 +598,15 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
 int check_finv(struct finv_node *finv)
 {
     int ret = 0;
+
     if(finv->is_checked != 0)
         return 0;
     else
-        finv->is_checked = 2;
+        finv->is_checked = 1;
+
     ret |= check_finvrefandassigntype(finv);
     ret |= finv_makeupandtypecheck(finv);
+
     return ret;
 }
 
@@ -611,6 +614,11 @@ int check_finv(struct finv_node *finv)
 int check_exprtypeandtypemakeup(struct expr_node *expr)
 {
     int ret = 0;
+
+    if(expr->is_checked != 0)
+        return 0;
+    else
+        expr->is_checked = 1;
 
     switch(expr->mode)
     {

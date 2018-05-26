@@ -84,6 +84,7 @@ enum expr_mode
 struct expr_node
 {
     YYLTYPE loc;
+    int is_checked;
     union
     {
         struct const_node    *cont;
