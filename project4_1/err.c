@@ -533,7 +533,9 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
                     // Check dimension size match
                     struct dim_list *par_dimlist = arg_list->type->dim;
                     struct dim_list *arg_dimlist = expr_list->vref->type->dim;
-                    
+
+                    for(; ref_dim!=0; ref_dim--, arg_dimlist=arg_dimlist->next);
+
                     while((par_dimlist!=0)&&(arg_dimlist!=0))
                     {
                         int par, arg;
