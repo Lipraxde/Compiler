@@ -496,7 +496,7 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
             }
             check_typematch(expr_list->type, type_arr, n);
             // Dimension check
-            if(expr_list->mode == VARIA_REFE)
+            if((expr_list->mode == VARIA_REFE)&&(expr_list->vref->var!=0))
             {
                 int arg_dim, def_dim, ref_dim;
                 struct dim_list *dim_list;
@@ -509,7 +509,7 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
                 iexpr_list = expr_list->vref->ref;
                 for(ref_dim=0; iexpr_list!=0; ref_dim++, iexpr_list=iexpr_list->sibling);
 
-                if((def_dim-ref_dim!=arg_dim)&&(expr_list->vref->var!=0))
+                if(def_dim-ref_dim!=arg_dim)
                 {
                     fprintf(outerr, "\033[31m");
                     fprintf(outerr, "<Error> Dimension mismatch\n");
