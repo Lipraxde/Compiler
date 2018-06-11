@@ -15,7 +15,7 @@ all: parser
 
 test: clean_log parser $(T_LOGS)
 
-parser: main.c y.tab.c lex.yy.c
+parser: err.c main.c y.tab.c lex.yy.c
 	$(CC) -g $^ -ly -lfl -o parser
 
 y.tab.c: yacc.y
