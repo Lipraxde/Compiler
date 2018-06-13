@@ -192,6 +192,8 @@ struct function_node
 {
     YYLTYPE loc;
     const char *name;
+    YYLTYPE end_loc;
+    const char *end_name;
     struct variable_node *arg;
     struct type_node     *ret_type;
     struct compound_node *comp;

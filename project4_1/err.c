@@ -96,6 +96,25 @@ int check_progname(const char *file_name, struct program_node *ast)
 }
 
 
+int check_funcname(struct function_node *func)
+{
+    if(strcmp(func->name, func->end_name) != 0)
+    {
+        fprintf(outerr, "\033[31m");
+        fprintf(outerr, "<Error> function ID is inconsistent with beginning\n");
+        fprintf(outerr, "\033[0m");
+        fprintf(outerr, "Beginning at line %d:\n", func->loc.first_line);
+        print_tagline(&func->loc);
+        fprintf(outerr, "Ending at line %d:\n", func->end_loc.first_line);
+        print_tagline(&func->end_loc);
+        fprintf(outerr, "\n");
+        return 1;
+    }
+
+    return 0;
+}
+
+
 int check_rettype(struct type_node *ret_type, struct type_node *expr_type, const YYLTYPE *loc)
 {
     if(ret_type->type == VOID_TYPE)
@@ -562,12 +581,9 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
 
             arg_list = arg_list->sibling;
         }
-
-        expr_list = expr_list->sibling;
-
-        // Argument declaration not enough
-        if((expr_list!=0)&&(arg_list==0))
+        else
         {
+            // Argument declaration not enough
             fprintf(outerr, "\033[31m");
             fprintf(outerr, "<Error> parameter are not enough\n");
             fprintf(outerr, "\033[0m");
@@ -575,6 +591,8 @@ static int finv_makeupandtypecheck(struct finv_node *finv)
             print_tagline(&expr_list->loc);
             fprintf(outerr, "\n");
         }
+
+        expr_list = expr_list->sibling;
     }
 
     // Expresstion(input arg) not enough

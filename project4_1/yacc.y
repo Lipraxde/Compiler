@@ -741,10 +741,12 @@ define_func  : func_name Lparenthese arg_list Rparenthese
         {
             $$ = calloc(1, sizeof(struct function_node));
             $$->name = $1;
+            $$->end_name = $9;
             $$->arg = $3;
             $$->ret_type = $5;
             $$->comp = $7;
             $$->loc = @1;
+            $$->end_loc = @9;
 
             debug_log("function declaration");
         }

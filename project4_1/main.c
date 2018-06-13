@@ -442,6 +442,7 @@ DUMP_END
 DUMP_BEGIN(func, function_node, "function declartion")
     while(p != 0)
     {
+        check_funcname(p);
         push_func(p);
         next_level();
 
