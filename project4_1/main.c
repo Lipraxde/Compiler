@@ -285,7 +285,6 @@ DUMP_BEGIN(expr, expr_node, "expression")
         dump_type_node(p->type, is_last);
         p = p->sibling;
     }
-
 DUMP_END
 
 
