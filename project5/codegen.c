@@ -96,7 +96,12 @@ static int code_loadconst(struct const_node *cont)
     static int load_type = 0;
 
     if(cont->type == INTE_TYPE)
-        write_code("\tsipush %d\n", cont->int_val);
+    {
+        if((cont->int_val<32768)&&(cont->int_val>=-32768))
+            write_code("\tsipush %d\n", cont->int_val);
+        else
+            write_code("\tldc %d\n", cont->int_val);
+    }
     else if(cont->type == REAL_TYPE)
         write_code("\tldc %f\n", cont->real_val);
     else if(cont->type == BOOL_TYPE)
@@ -179,6 +184,7 @@ static int code_opt(struct expr_node *expr)
 
     ret |= code_expr(expr->rsite);
     if((expr->rsite->type->type==INTE_TYPE)&&
+        (expr->lsite != 0)&&
         (expr->lsite->type->type==REAL_TYPE))
     {
         write_code("\ti2f\n");
@@ -223,7 +229,7 @@ static int code_opt(struct expr_node *expr)
         case cmp_neq:
             cmp_str = "ifne";
 CMP_COMMON:
-            if(convert_to_real == 0)
+            if((convert_to_real==0)&&(expr->rsite->type->type==INTE_TYPE))
                 write_code("\tisub\n");
             else
                 write_code("\tfcmpl\n");
@@ -319,6 +325,9 @@ static int code_simple(struct simp_node *simp)
     else
     {
         ret |= code_expr(simp->rhs);
+        if((simp->rhs->type->type==INTE_TYPE)&&
+            (simp->lhs->type->type==REAL_TYPE))
+            write_code("\ti2f\n");
         ret |= code_storevref(simp->lhs);
     }
 
@@ -371,7 +380,7 @@ static int code_for(struct for__node *for_)
     write_code("\tiload %d\n", for_->i->var_addr-1);
     write_code("\tsipush %d\n", for_->end);
     write_code("\tisub\n");
-    write_code("\tifge LEXIT_%ld\n", uniq_id);
+    write_code("\tifgt LEXIT_%ld\n", uniq_id);
     ret |= code_statment(for_->stat);
     // loop variable add 1.
     write_code("\tiload %d\n", for_->i->var_addr-1);
@@ -484,12 +493,14 @@ static int code_function(struct function_node *func)
         write_code(")%s\n", type_tostring(func->ret_type));
 
         write_code(".limit stack %d\n", limit_stack);
-        write_code(".limit locals %d\n", func->loc_varcount+1);
+        write_code(".limit locals %d\n", func->loc_varcount);
 
         ret |= code_compound(func->comp);
 
         if(func->ret_type->type == VOID_TYPE)
             write_code("\treturn\n");
+        else    // Avoid label at last.
+            write_code("\tnop\n");
         write_code(".end method\n\n");
     }
 
